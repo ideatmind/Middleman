@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "324665833338",
+    "project_id": "middleman-bebed",
+    "storage_bucket": "middleman-bebed.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:324665833338:android:b7ff950d3c234983e588c3",
+        "android_client_info": {
+          "package_name": "com.middleman.contracts"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCd3uz-hYrMMgBpqaiGWwtCIF_Voagh_20"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
