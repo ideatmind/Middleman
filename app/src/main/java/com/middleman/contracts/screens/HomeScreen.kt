@@ -1,4 +1,4 @@
-package com.middleman.contracts
+package com.middleman.contracts.screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -28,12 +28,17 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
+import com.middleman.contracts.BottomNavigationBar
+import com.middleman.contracts.components.LiveOrders
+import com.middleman.contracts.R
+import com.middleman.contracts.components.WalletInfo
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen() {
+fun HomeScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -65,7 +70,9 @@ fun HomeScreen() {
             )
         },
         bottomBar = {
-            BottomNavigationBar()
+            BottomNavigationBar(
+                navController = navController
+            )
         },
     ) {paddingValues ->
         Column(Modifier.padding(paddingValues)) {

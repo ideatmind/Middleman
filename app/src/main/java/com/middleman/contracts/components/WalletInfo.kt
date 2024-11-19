@@ -1,4 +1,4 @@
-package com.middleman.contracts
+package com.middleman.contracts.components
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

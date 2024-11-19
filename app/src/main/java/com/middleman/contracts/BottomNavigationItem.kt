@@ -2,6 +2,7 @@ package com.middleman.contracts
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
@@ -10,10 +11,12 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.outlined.AccountCircle
 import androidx.compose.material.icons.outlined.Home
 import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 
 data class BottomNavigation(
@@ -33,9 +42,36 @@ data class BottomNavigation(
     val unSelectedIcon :ImageVector
 )
 
+@Composable
+fun BottomNav(navController: NavHostController) {
+    val navController1 = rememberNavController()
+
+    Scaffold(
+        bottomBar = { BottomNavigationBar(navController1) }
+    ) { innerPadding ->
+        NavHost(navController = navController1, startDestination = Routes.Home.routes,
+            modifier = Modifier.padding(innerPadding)) {
+//            composable(Routes.Notification.routes) {
+//                Notification()
+//            }
+            composable(Routes.Home.routes) {
+                HomeScreen(navController)
+            }
+//            composable(Routes.Search.routes) {
+//                Search()
+//            }
+//            composable(Routes.Profile.routes) {
+//                Profile(navController)
+//            }
+//            composable(Routes.AddThreads.routes) {
+//                AddThreads(navController1)
+//            }
+        }
+    }
+}
 
 @Composable
-fun BottomNavigationBar() {
+fun BottomNavigationBar(navController: NavHostController) {
     var selectedItemIndex by rememberSaveable {
         mutableIntStateOf(0)
     }

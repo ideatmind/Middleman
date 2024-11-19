@@ -1,4 +1,4 @@
-package com.middleman.contracts
+package com.middleman.contracts.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
