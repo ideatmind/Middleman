@@ -8,7 +8,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
+import com.middleman.contracts.screens.Orders
+import com.middleman.contracts.screens.Profile
 import com.middleman.contracts.screens.RegisterScreen
+import com.middleman.contracts.screens.Transactions
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -16,21 +19,21 @@ fun NavGraph(
     navController: NavHostController
 ) {
     NavHost(navController = navController, startDestination = Routes.Login.routes) {
-//        composable(Routes.Splash.routes) {
-//            Splash(navController)
-//        }
+        composable(Routes.Orders.routes) {
+            Orders(navController)
+        }
 //        composable(Routes.Notification.routes) {
 //            Notification()
 //        }
         composable(Routes.Home.routes) {
             HomeScreen(navController)
         }
-//        composable(Routes.Search.routes) {
-//            Search()
-//        }
-//        composable(Routes.Profile.routes) {
-//            Profile(navController)
-//        }
+        composable(Routes.Transactions.routes) {
+            Transactions(navController)
+        }
+        composable(Routes.Profile.routes) {
+            Profile(navController)
+        }
 //        composable(Routes.BottomNav.routes) {
 //            BottomNav(navController)
 //        }

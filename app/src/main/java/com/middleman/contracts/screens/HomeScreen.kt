@@ -29,7 +29,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
-import com.middleman.contracts.BottomNavigationBar
 import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.R
 import com.middleman.contracts.components.WalletInfo
@@ -70,8 +69,8 @@ fun HomeScreen(navController: NavHostController) {
             )
         },
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController
+            MyBottomBar(
+                navController1 = navController
             )
         },
     ) {paddingValues ->
