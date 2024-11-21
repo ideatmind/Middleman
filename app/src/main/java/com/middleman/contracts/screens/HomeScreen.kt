@@ -32,6 +32,7 @@ import androidx.navigation.NavHostController
 import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.R
 import com.middleman.contracts.components.WalletInfo
+import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -67,12 +68,7 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 }
             )
-        },
-        bottomBar = {
-            MyBottomBar(
-                navController1 = navController
-            )
-        },
+        }
     ) {paddingValues ->
         Column(Modifier.padding(paddingValues)) {
             WalletInfo()
@@ -94,7 +90,12 @@ fun HomeScreen(navController: NavHostController) {
                         .size(120.dp, 45.dp)
                         .clip(RoundedCornerShape(18.dp))
                         .background(Color( 0xFF118114))
-                        .clickable { },
+                        .clickable {
+                            navController.navigate(Routes.CreateOrder.routes) {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(

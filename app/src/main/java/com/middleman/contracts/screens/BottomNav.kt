@@ -14,10 +14,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -27,11 +32,12 @@ import androidx.navigation.compose.rememberNavController
 import com.middleman.contracts.R
 import com.middleman.contracts.model.BottomNavigation
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.viewmodel.AuthViewModel
 
 @Composable
 fun BottomNav(navController: NavHostController) {
-    val navController1 = rememberNavController()
 
+    val navController1 = rememberNavController()
     Scaffold(
         bottomBar = { MyBottomBar(navController1) }
     ) { innerPadding ->
@@ -40,9 +46,6 @@ fun BottomNav(navController: NavHostController) {
             composable(Routes.Orders.routes) {
                 Orders(navController)
             }
-//        composable(Routes.Notification.routes) {
-//            Notification()
-//        }
             composable(Routes.Home.routes) {
                 HomeScreen(navController)
             }
@@ -52,21 +55,10 @@ fun BottomNav(navController: NavHostController) {
             composable(Routes.Profile.routes) {
                 Profile(navController)
             }
-//        composable(Routes.BottomNav.routes) {
-//            BottomNav(navController)
-//        }
-//        composable(Routes.AddThreads.routes) {
-//            AddThreads(navController)
-//        }
-            composable(Routes.Login.routes) {
-                LoginScreen(navController)
-            }
-            composable(Routes.Register.routes) {
-                RegisterScreen(navController)
-            }
         }
     }
 }
+
 
 
 @Composable
@@ -101,7 +93,7 @@ fun MyBottomBar(navController1: NavHostController) {
         )
     )
 
-    BottomAppBar {
+    BottomAppBar() {
         list.forEach {
             val selected = it.route == backStackEntry.value?.destination?.route
 
@@ -115,7 +107,7 @@ fun MyBottomBar(navController1: NavHostController) {
             },
                 icon = {
                     Icon(imageVector = if(selected)it.selectedIcon else it.unSelectedIcon, contentDescription = null,
-                        modifier = if (it.title == "Transactions") Modifier.size(28.dp) else Modifier)
+                        modifier = Modifier.size(26.dp) )
 
                 })
 

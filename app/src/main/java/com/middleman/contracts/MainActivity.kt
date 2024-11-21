@@ -10,9 +10,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.FirebaseApp
 import com.middleman.contracts.navigation.NavGraph
-import com.middleman.contracts.screens.LoginScreen
-import com.middleman.contracts.screens.RegisterScreen
+import com.middleman.contracts.screens.CreateOrder
 import com.middleman.contracts.ui.theme.ContractsTheme
 
 class MainActivity : ComponentActivity() {
@@ -24,12 +24,11 @@ class MainActivity : ComponentActivity() {
             ContractsTheme {
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background,
-//                    shape = {}
+                    color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
                     NavGraph(navController)
-//                    RegisterScreen(navController)
+//                    CreateOrder(navController)
                 }
             }
         }

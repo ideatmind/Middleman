@@ -2,8 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id ("kotlin-kapt")
-    id ("com.google.gms.google-services")
+    alias(libs.plugins.google.gms.google.services)
 }
 
 android {
@@ -51,6 +50,9 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.firebase.database)
+    implementation(libs.firebase.auth.ktx)
+    implementation(libs.firebase.storage.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -59,40 +61,16 @@ dependencies {
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 
-// Navigation
-    implementation("androidx.navigation:navigation-compose:2.7.5")
+    val nav_version = "2.8.3"
 
-//    // Room
-//    implementation("androidx.room:room-ktx:2.6.0")
-//    kapt("androidx.room:room-compiler:2.6.0")
-//    implementation("androidx.room:room-paging:2.6.0")
-//
-//    // Dagger - Hilt
-//    implementation("com.google.dagger:hilt-android:2.51")
-//    kapt("com.google.dagger:hilt-compiler:2.51")
-//    kapt("androidx.hilt:hilt-compiler:1.1.0")
-//    implementation("androidx.hilt:hilt-navigation-compose:1.1.0")
-//
-//    // Retrofit
-//    implementation("com.squareup.retrofit2:retrofit:2.9.0")
-//    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
-//    implementation("com.squareup.okhttp3:okhttp:4.11.0")
-//    implementation("com.squareup.okhttp3:logging-interceptor:4.10.0")
-//
-//    // Coil
-//    implementation("io.coil-kt:coil-compose:2.4.0")
-//
+    implementation("androidx.navigation:navigation-compose:$nav_version")
+
     // Extended Icons
     implementation("androidx.compose.material:material-icons-extended:1.5.4")
 
-    // system UI Controller
-    implementation("com.google.accompanist:accompanist-systemuicontroller:0.27.0")
-
-    implementation ("com.google.firebase:firebase-auth-ktx:23.0.0")
-    implementation ("com.google.android.gms:play-services-auth:21.2.0")
-
-    implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.8.6")
-    implementation ("androidx.lifecycle:lifecycle-runtime-compose:2.8.6")
-    implementation ("androidx.navigation:navigation-compose:2.8.2")
-    implementation ("io.coil-kt:coil-compose:2.6.0")
+    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.0-rc01")
+    implementation("io.coil-kt:coil-compose:2.2.2")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
 }

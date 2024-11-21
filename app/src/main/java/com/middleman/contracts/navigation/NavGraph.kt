@@ -6,6 +6,9 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.middleman.contracts.screens.BottomNav
+import com.middleman.contracts.screens.CreateOrder
+import com.middleman.contracts.screens.CreatedOrder
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
 import com.middleman.contracts.screens.Orders
@@ -18,34 +21,38 @@ import com.middleman.contracts.screens.Transactions
 fun NavGraph(
     navController: NavHostController
 ) {
+    // Set the start destination to the BottomNav route
     NavHost(navController = navController, startDestination = Routes.Login.routes) {
-        composable(Routes.Orders.routes) {
-            Orders(navController)
+        // The BottomNav composable is now the main entry point for navigation
+        composable(Routes.BottomNav.routes) {
+            BottomNav(navController) // This will contain the bottom navigation bar
         }
-//        composable(Routes.Notification.routes) {
-//            Notification()
-//        }
+        // Define other routes that will be displayed within the BottomNav
+        composable(Routes.Orders.routes) {
+            Orders(navController) // Orders screen
+        }
         composable(Routes.Home.routes) {
-            HomeScreen(navController)
+            HomeScreen(navController) // Home screen
         }
         composable(Routes.Transactions.routes) {
-            Transactions(navController)
+            Transactions(navController) // Transactions screen
         }
         composable(Routes.Profile.routes) {
-            Profile(navController)
+            Profile(navController) // Profile screen
         }
-//        composable(Routes.BottomNav.routes) {
-//            BottomNav(navController)
-//        }
-//        composable(Routes.AddThreads.routes) {
-//            AddThreads(navController)
-//        }
+        // Login and Register screens are separate and do not include the BottomNav
         composable(Routes.Login.routes) {
-            LoginScreen(navController)
+            LoginScreen(navController) // Login screen
         }
         composable(Routes.Register.routes) {
-            RegisterScreen(navController)
+            RegisterScreen(navController) // Register screen
         }
-
+        composable(Routes.CreateOrder.routes) {
+            CreateOrder(navController)
+        }
+//        composable(Routes.CreatedOrder.routes) { backStackEntry ->
+//            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
+//            CreatedOrder(navController, orderId) // Pass the orderId to CreatedOrder
+//        }
     }
 }

@@ -1,26 +1,82 @@
 {
   "project_info": {
-    "project_number": "324665833338",
-    "project_id": "middleman-bebed",
-    "storage_bucket": "middleman-bebed.appspot.com"
+    "project_number": "153875744437",
+    "firebase_url": "https://threads-591ce-default-rtdb.firebaseio.com",
+    "project_id": "threads-591ce",
+    "storage_bucket": "threads-591ce.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:324665833338:android:b7ff950d3c234983e588c3",
+        "mobilesdk_app_id": "1:153875744437:android:7a8c19848249ba4334a0fc",
         "android_client_info": {
-          "package_name": "com.middleman.contracts"
+          "package_name": "com.example.threads"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "153875744437-va2fa6i712dtivk0lfou5kplgo3apq5b.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.threads",
+            "certificate_hash": "c8bbed0c55ecc5c5c3cb9afbd41ccadfe03e3d42"
+          }
+        },
+        {
+          "client_id": "153875744437-44md6a3673vnrudjhhlhe8vv1elqcl48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyCd3uz-hYrMMgBpqaiGWwtCIF_Voagh_20"
+          "current_key": "AIzaSyAP3S3Jd-sjRJvnNVuno1VQ-0W0L1ZP71A"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153875744437-44md6a3673vnrudjhhlhe8vv1elqcl48.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:153875744437:android:3e79d6b5a755815434a0fc",
+        "android_client_info": {
+          "package_name": "com.middleman.contracts"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "153875744437-87hqa3fqh6u6f75glhmhkdf8or27hulp.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.middleman.contracts",
+            "certificate_hash": "c8bbed0c55ecc5c5c3cb9afbd41ccadfe03e3d42"
+          }
+        },
+        {
+          "client_id": "153875744437-44md6a3673vnrudjhhlhe8vv1elqcl48.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAP3S3Jd-sjRJvnNVuno1VQ-0W0L1ZP71A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "153875744437-44md6a3673vnrudjhhlhe8vv1elqcl48.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }

@@ -1,4 +1,5 @@
 package com.middleman.contracts.screens
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -17,18 +18,23 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Visibility
+import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -36,11 +42,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.middleman.contracts.R
+import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
@@ -49,13 +62,29 @@ import com.middleman.contracts.ui.theme.ubuntuFontFamily
 @Composable
 fun LoginScreen(navController: NavHostController) {
 
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var passwordVisible by remember { mutableStateOf(false) }
+
+    val authViewModel: AuthViewModel = viewModel()
+    val firebaseUser by authViewModel.firebaseUser.observeAsState()
+    val error by authViewModel.error.observeAsState()
+
+    val context = LocalContext.current
+
+    LaunchedEffect(firebaseUser) {
+        if(firebaseUser != null) {
+            navController.navigate(Routes.BottomNav.routes) {
+                popUpTo(navController.graph.startDestinationId)
+                launchSingleTop = true
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color(0xFF121212))
     ) {
         // Orange Triangle
         Box(
@@ -73,6 +102,27 @@ fun LoginScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
+            Box(contentAlignment = Alignment.Center,
+               modifier =  Modifier.fillMaxWidth().background(Color(0xFF121212))) {
+                Card(
+                    modifier = Modifier.size(80.dp).background(Color(0xFF121212)),
+                    shape = RoundedCornerShape(100.dp)
+                ) {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ribbon),
+                            contentDescription = "Ribbon Icon",
+                            modifier = Modifier.size(65.dp)
+                        )
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(20.dp))
+
         Card(
             colors = CardDefaults.cardColors(containerColor = Color(0xFF1E1E1E)), // Darker card color
             border = BorderStroke(0.7.dp, Color.White), // Light purple border
@@ -106,9 +156,9 @@ fun LoginScreen(navController: NavHostController) {
                 ) {
                     // Username Field
                     OutlinedTextField(
-                        value = username,
-                        onValueChange = { username = it },
-                        label = { Text("Username", color = Color.White) },
+                        value = email,
+                        onValueChange = { email = it },
+                        label = { Text("Email", color = Color.White) },
                         leadingIcon = {
                             Icon(Icons.Outlined.Person, contentDescription = "Username Icon", tint = Color.White)
                         },
@@ -141,6 +191,18 @@ fun LoginScreen(navController: NavHostController) {
                         },
                         shape = RoundedCornerShape(24.dp),
                         modifier = Modifier.fillMaxWidth(),
+                        trailingIcon = {
+                            val icon = if (passwordVisible) {
+                                Icons.Outlined.Visibility // Show password icon
+                            } else {
+                                Icons.Outlined.VisibilityOff // Hide password icon
+                            }
+                            IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                                Icon(icon, contentDescription = if (passwordVisible) "Hide password" else "Show password", tint = Color.LightGray)
+                            }
+                        },
+                        visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                        singleLine = true,
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedTextColor = Color.White,
                             focusedTextColor = Color.White,
@@ -172,9 +234,13 @@ fun LoginScreen(navController: NavHostController) {
                     // Login Button
                     Button(
                         onClick = {
-                            navController.navigate(Routes.Home.routes) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
+                            error?.let {
+                                Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+                            }
+                            if(email.isEmpty() || password.isEmpty()) {
+                                Toast.makeText(context, "Provide all details", Toast.LENGTH_SHORT).show()
+                            }else{
+                                authViewModel.login(email, password, context)
                             }
                         },
                         colors = ButtonDefaults.buttonColors(Color.White), // Orange button color
