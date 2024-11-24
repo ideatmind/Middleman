@@ -11,6 +11,7 @@ import com.middleman.contracts.screens.CreateOrder
 import com.middleman.contracts.screens.CreatedOrder
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
+import com.middleman.contracts.screens.Notifications
 import com.middleman.contracts.screens.Orders
 import com.middleman.contracts.screens.Profile
 import com.middleman.contracts.screens.RegisterScreen
@@ -49,6 +50,9 @@ fun NavGraph(
         }
         composable(Routes.CreateOrder.routes) {
             CreateOrder(navController)
+        }
+        composable(Routes.Notifications.routes) {
+            Notifications(navController)
         }
 //        composable(Routes.CreatedOrder.routes) { backStackEntry ->
 //            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""

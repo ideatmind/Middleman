@@ -9,10 +9,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.rememberNavController
-import com.google.firebase.FirebaseApp
 import com.middleman.contracts.navigation.NavGraph
-import com.middleman.contracts.screens.CreateOrder
+import com.middleman.contracts.screens.Notifications
+import com.middleman.contracts.screens.Profile
 import com.middleman.contracts.ui.theme.ContractsTheme
 
 class MainActivity : ComponentActivity() {
@@ -20,6 +21,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        installSplashScreen()
         setContent {
             ContractsTheme {
                 Surface(
@@ -28,7 +30,8 @@ class MainActivity : ComponentActivity() {
                 ) {
                     val navController = rememberNavController()
                     NavGraph(navController)
-//                    CreateOrder(navController)
+//                    Notifications(navController)
+//                    Profile(navController)
                 }
             }
         }

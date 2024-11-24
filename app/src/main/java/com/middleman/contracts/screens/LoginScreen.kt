@@ -1,5 +1,7 @@
 package com.middleman.contracts.screens
+import android.app.Activity
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +22,7 @@ import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -61,6 +64,37 @@ import com.middleman.contracts.ui.theme.ubuntuFontFamily
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(navController: NavHostController) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    // Handle back button press
+    val activity = LocalContext.current as? Activity
+    BackHandler {
+        // Show the confirmation dialog when back is pressed
+        showDialog = true
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(text = "Close App", fontFamily = ubuntuFontFamily, fontSize = 19.sp, fontWeight = FontWeight.SemiBold) },
+            text = { Text("Do you want to close the app?", fontFamily = poppinsFontFamily, fontSize = 15.sp, fontWeight = FontWeight.Normal) },
+            dismissButton = {
+                Button(onClick = {
+                    showDialog = false
+                },
+                    colors = ButtonDefaults.buttonColors(Color.Black)) {
+                    Text("No", fontFamily = poppinsFontFamily)
+                }
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    activity?.finishAffinity() // Close the app
+                }) {
+                    Text("Yes", fontFamily = poppinsFontFamily)
+                }
+            }
+        )
+    }
 
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
@@ -109,7 +143,7 @@ fun LoginScreen(navController: NavHostController) {
                     shape = RoundedCornerShape(100.dp)
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().background(Color.White),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(

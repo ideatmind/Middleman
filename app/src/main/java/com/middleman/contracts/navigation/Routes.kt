@@ -7,7 +7,7 @@ sealed class Routes (val routes : String){
     object Orders : Routes("orders")
     object CreateOrder : Routes("createOrder")
     object CreatedOrder : Routes("createdOrder/{userId}")
-    object Notification : Routes("notifications")
+    object Notifications : Routes("notifications")
     object BottomNav : Routes("bottomNav")
     object Login : Routes("login")
     object Register : Routes("register")

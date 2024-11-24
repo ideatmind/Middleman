@@ -135,7 +135,7 @@ fun RegisterScreen(navController: NavHostController) {
                     shape = RoundedCornerShape(100.dp)
                 ) {
                     Box(
-                        modifier = Modifier.fillMaxSize(),
+                        modifier = Modifier.fillMaxSize().background(Color.White),
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
