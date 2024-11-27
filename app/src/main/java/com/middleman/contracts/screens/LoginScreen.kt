@@ -3,6 +3,7 @@ import android.app.Activity
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
@@ -28,6 +30,7 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -47,6 +50,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
@@ -55,11 +59,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.android.gms.auth.api.signin.GoogleSignIn
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.middleman.contracts.R
-import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
+import com.middleman.contracts.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -103,15 +111,39 @@ fun LoginScreen(navController: NavHostController) {
     val authViewModel: AuthViewModel = viewModel()
     val firebaseUser by authViewModel.firebaseUser.observeAsState()
     val error by authViewModel.error.observeAsState()
+    var user by remember { mutableStateOf(Firebase.auth.currentUser) }
+
+    // Google login
+    val launcher = authViewModel.authLauncher(
+        onAuthComplete = { result ->
+            user = result.user
+        },
+        onAuthError = {
+            user = null
+        }
+    )
+
+    val token = stringResource(R.string.web_id)
 
     val context = LocalContext.current
 
+
     LaunchedEffect(firebaseUser) {
-        if(firebaseUser != null) {
+        if(firebaseUser !=  null) {
             navController.navigate(Routes.BottomNav.routes) {
                 popUpTo(navController.graph.startDestinationId)
                 launchSingleTop = true
             }
+        }
+    }
+
+    LaunchedEffect(user) {
+        if(user != null) {
+            navController.navigate(Routes.BottomNav.routes) {
+                popUpTo(navController.graph.startDestinationId)
+                launchSingleTop = true
+            }
+            Toast.makeText(context, "Logging in with ${user!!.email}", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -290,6 +322,38 @@ fun LoginScreen(navController: NavHostController) {
                         ) {
                             Text(text = "Login", color = Color.Black, fontSize = 20.sp, fontFamily = poppinsFontFamily, fontWeight = FontWeight.SemiBold)
                             Icon(Icons.Default.ArrowForwardIos, contentDescription = "Arrow Icon", tint = Color.Black)
+                        }
+                    }
+
+                    HorizontalDivider(Modifier.padding(vertical = 20.dp, horizontal = 24.dp), color = Color.LightGray)
+
+                    Button(onClick = {
+                        if(user == null) {
+                            val gso =
+                                GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                                    .requestIdToken(token)
+                                    .requestEmail()
+                                    .build()
+                            val gsc = GoogleSignIn.getClient(context,gso)
+                            launcher.launch(gsc.signInIntent)
+                        }
+                    },
+                        colors = ButtonDefaults.buttonColors(Color.White), // Orange button color
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(50.dp)) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Text(text = "Login with Google", color = Color.Black, fontSize = 17.sp, fontFamily = poppinsFontFamily, fontWeight = FontWeight.Normal)
+
+                            Spacer(modifier = Modifier.width(10.dp))
+
+                            Image(
+                                painter = painterResource(id = R.drawable.google_icon),
+                                contentDescription = null,
+                                modifier = Modifier.size(30.dp)
+                            )
                         }
                     }
 

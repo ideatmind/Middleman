@@ -68,11 +68,11 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // Extended Icons
-    implementation("androidx.compose.material:material-icons-extended:1.5.4")
+    implementation("androidx.compose.material:material-icons-extended:1.7.5")
+    implementation("com.google.android.gms:play-services-auth:21.2.0")
 
-    implementation("androidx.constraintlayout:constraintlayout-compose-android:1.1.0-rc01")
-    implementation("io.coil-kt:coil-compose:2.2.2")
-    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
-    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
-    implementation("androidx.compose.runtime:runtime-livedata:1.7.4")
+    implementation("io.coil-kt:coil-compose:2.4.0")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+    implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
 }

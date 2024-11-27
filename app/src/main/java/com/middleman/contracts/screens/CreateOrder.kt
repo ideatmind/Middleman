@@ -49,6 +49,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -478,56 +479,33 @@ fun CreatedOrder(
 
 @Composable
 fun ShowOrder(orderDetails: OrderModel) {
+    var ShowOrderItems = listOf(
+                ShowOrderData("Seller: ${orderDetails.seller}"),
+                ShowOrderData("Customer: ${orderDetails.customer}"),
+                ShowOrderData("Product Name: ${orderDetails.productName}"),
+                ShowOrderData("Product Cost: ${orderDetails.productCost}"),
+                ShowOrderData("Product Quantity: ${orderDetails.productQuantity}"),
+                ShowOrderData("Total Amount: ${orderDetails.totalAmount}")
+    )
+
     Box {
         Column(Modifier.padding(4.dp)) {
-            Text(
-                text = "Seller: ${orderDetails.seller}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
-            Text(
-                text = "Customer: ${orderDetails.customer}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
-            Text(
-                text = "Product Name: ${orderDetails.productName}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
-            Text(
-                text = "Product Cost: ${orderDetails.productCost}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
-            Text(
-                text = "Product Quantity: ${orderDetails.productQuantity}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
-            Text(
-                text = "Total Amount: ${orderDetails.totalAmount}",
-                color = Color.Black,
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Normal,
-                fontFamily = poppinsFontFamily,
-                modifier = Modifier.padding(1.dp)
-            )
+
+            ShowOrderItems.forEach {items ->
+                Text(
+                    text = items.text,
+                    color = Color.Black,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = poppinsFontFamily,
+                    modifier = Modifier.padding(1.dp)
+                )
+            }
         }
     }
 }
+
+data class ShowOrderData(
+    var text: String
+)
+

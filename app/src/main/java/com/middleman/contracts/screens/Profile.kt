@@ -13,16 +13,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.rounded.AddShoppingCart
 import androidx.compose.material.icons.rounded.AddTask
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.PermIdentity
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -46,7 +43,6 @@ import androidx.navigation.NavHostController
 import com.middleman.contracts.R
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
-import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -254,7 +250,8 @@ fun Profile(navController : NavHostController) {
                 Box(
                     Modifier
                         .fillMaxWidth()
-                        .padding(12.dp), contentAlignment = Alignment.Center) {
+                        .padding(12.dp), contentAlignment = Alignment.Center)
+                {
                     Button(
                         colors = ButtonDefaults.buttonColors(containerColor = Color.Black),
                         onClick = {
