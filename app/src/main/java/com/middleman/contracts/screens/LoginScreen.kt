@@ -255,7 +255,9 @@ fun LoginScreen(navController: NavHostController) {
                     Spacer(modifier = Modifier.height(6.dp))
 
                     // Forgot Password Text
-                    TextButton (onClick = {}, Modifier.align(Alignment.End)) {
+                    TextButton (onClick = {
+                        navController.navigate(Routes.ForgotPassword.routes)
+                    }, Modifier.align(Alignment.End)) {
                         Text("Forgot password?",
                             modifier = Modifier
                                 .padding(top = 4.dp),

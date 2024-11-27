@@ -18,6 +18,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
@@ -33,6 +34,7 @@ import com.middleman.contracts.R
 import com.middleman.contracts.model.BottomNavigation
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.viewmodel.AuthViewModel
+import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @Composable
 fun BottomNav(navController: NavHostController) {
@@ -44,7 +46,14 @@ fun BottomNav(navController: NavHostController) {
         NavHost(navController = navController1, startDestination = Routes.Home.routes,
             modifier = Modifier.padding(innerPadding)) {
             composable(Routes.Orders.routes) {
-                Orders(navController)
+                val orderViewModel: CreatedOrdersViewModel = viewModel()
+                val userId = orderViewModel.getCurrentUserId()
+                if (userId != null) {
+                    Orders(
+                        orderViewModel, userId,
+                        navController = navController
+                    )
+                }
             }
             composable(Routes.Home.routes) {
                 HomeScreen(navController)
@@ -97,21 +106,24 @@ fun MyBottomBar(navController1: NavHostController) {
         list.forEach {
             val selected = it.route == backStackEntry.value?.destination?.route
 
-            NavigationBarItem(selected = selected, onClick = {
-                navController1.navigate(it.route) {
-                    popUpTo(navController1.graph.findStartDestination().id) {
-                        saveState = true
+            NavigationBarItem(
+                selected = selected,
+                onClick = {
+                    navController1.navigate(it.route) {
+                        popUpTo(navController1.graph.findStartDestination().id) {
+                            saveState = true
+                        }
+                        launchSingleTop = true
                     }
-                    launchSingleTop = true
-                }
-            },
+                },
                 icon = {
-                    Icon(imageVector = if(selected)it.selectedIcon else it.unSelectedIcon, contentDescription = null,
-                        modifier = Modifier.size(26.dp) )
-
-                })
-
+                    Icon(
+                        imageVector = if (selected) it.selectedIcon else it.unSelectedIcon,
+                        contentDescription = null,
+                        modifier = Modifier.size(26.dp)
+                    )
+                }
+            )
         }
     }
-
 }

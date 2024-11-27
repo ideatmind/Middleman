@@ -3,12 +3,13 @@ package com.middleman.contracts.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.middleman.contracts.screens.BottomNav
 import com.middleman.contracts.screens.CreateOrder
-import com.middleman.contracts.screens.CreatedOrder
+import com.middleman.contracts.screens.ForgotPasswordScreen
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
 import com.middleman.contracts.screens.Notifications
@@ -16,6 +17,7 @@ import com.middleman.contracts.screens.Orders
 import com.middleman.contracts.screens.Profile
 import com.middleman.contracts.screens.RegisterScreen
 import com.middleman.contracts.screens.Transactions
+import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
 @Composable
@@ -27,10 +29,6 @@ fun NavGraph(
         // The BottomNav composable is now the main entry point for navigation
         composable(Routes.BottomNav.routes) {
             BottomNav(navController) // This will contain the bottom navigation bar
-        }
-        // Define other routes that will be displayed within the BottomNav
-        composable(Routes.Orders.routes) {
-            Orders(navController) // Orders screen
         }
         composable(Routes.Home.routes) {
             HomeScreen(navController) // Home screen
@@ -53,6 +51,20 @@ fun NavGraph(
         }
         composable(Routes.Notifications.routes) {
             Notifications(navController)
+        }
+        composable(Routes.ForgotPassword.routes) {
+            ForgotPasswordScreen(navController)
+        }
+
+        composable(Routes.Orders.routes) {
+            val orderViewModel: CreatedOrdersViewModel = viewModel()
+            val userId = orderViewModel.getCurrentUserId()
+            if (userId != null) {
+                Orders(
+                    orderViewModel, userId,
+                    navController = navController
+                )
+            }
         }
 //        composable(Routes.CreatedOrder.routes) { backStackEntry ->
 //            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""

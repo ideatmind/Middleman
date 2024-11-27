@@ -11,5 +11,5 @@ sealed class Routes (val routes : String){
     object BottomNav : Routes("bottomNav")
     object Login : Routes("login")
     object Register : Routes("register")
-
+    object ForgotPassword : Routes("forgotPassword")
 }

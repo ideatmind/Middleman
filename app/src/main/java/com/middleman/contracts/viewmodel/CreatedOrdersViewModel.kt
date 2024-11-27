@@ -1,9 +1,12 @@
 package com.middleman.contracts.viewmodel
 
 import android.util.Log
+import android.widget.Toast
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -16,13 +19,17 @@ class CreatedOrdersViewModel: ViewModel() {
     val db = FirebaseDatabase.getInstance()
     val thread = db.getReference("threads")
 
-    private val _ordersAndUsers = MutableLiveData<List<Pair<OrderModel, UserModel>>>()
+    val _ordersAndUsers = MutableLiveData<List<Pair<OrderModel, UserModel>>>()
     var ordersAndUsers : LiveData<List<Pair<OrderModel, UserModel>>> = _ordersAndUsers
 
     init {
         fetchOrdersAndUsers {
             _ordersAndUsers.value = it
         }
+    }
+
+    fun getCurrentUserId(): String? {
+        return FirebaseAuth.getInstance().currentUser?.uid
     }
 
     private fun fetchOrdersAndUsers(onResult: (List<Pair<OrderModel, UserModel>>) -> Unit) {
@@ -45,7 +52,7 @@ class CreatedOrdersViewModel: ViewModel() {
             }
 
             override fun onCancelled(error: DatabaseError) {
-                TODO("Not yet implemented")
+
             }
 
         })
@@ -60,7 +67,7 @@ class CreatedOrdersViewModel: ViewModel() {
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-                    TODO("Not yet implemented")
+                    Log.d("Error", error.message)
                 }
 
             })
@@ -89,6 +96,28 @@ class CreatedOrdersViewModel: ViewModel() {
         })
         return orderLiveData
     }
+
+
+    fun fetchOrdersByUserId(userId: String, onResult: (List<OrderModel>) -> Unit) {
+        db.getReference("orders").orderByChild("userId").equalTo(userId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val orders = mutableListOf<OrderModel>()
+                    for (orderSnapshot in snapshot.children) {
+                        val order = orderSnapshot.getValue(OrderModel::class.java)
+                        order?.let { orders.add(it) }
+                    }
+                    onResult(orders)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("CreatedOrdersViewModel", "Error fetching orders: ${error.message}")
+                    onResult(emptyList())
+                }
+            })
+    }
+
+
 
 
 }

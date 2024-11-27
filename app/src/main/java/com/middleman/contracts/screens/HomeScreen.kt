@@ -1,18 +1,39 @@
+
 package com.middleman.contracts.screens
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.os.Build
 import androidx.activity.compose.BackHandler
-import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.TopAppBar
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,13 +43,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.R
-import com.middleman.contracts.components.WalletInfo
+import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
+import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,8 +122,45 @@ fun HomeScreen(navController: NavHostController) {
             )
         }
     ) { paddingValues ->
-        Column(Modifier.padding(paddingValues)) {
-            WalletInfo()
+        Column(Modifier.padding(paddingValues).padding(top = 0.dp)) {
+
+            // wallet
+                Card(
+                    modifier = Modifier.padding(16.dp)
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    colors = CardDefaults.cardColors(Color.LightGray),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Column() {
+                        Text(
+                            text = "Wallet",
+                            modifier = Modifier.padding(20.dp).padding(bottom = 15.dp),
+                            color = Color.Black,
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = poppinsFontFamily
+                        )
+                        Text(
+                            text = "Total Orders: ",
+                            modifier = Modifier.padding(start = 20.dp,bottom = 5.dp),
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = poppinsFontFamily
+                        )
+                        Text(
+                            text = "Order Amount: ",
+                            modifier = Modifier.padding(start = 20.dp,bottom = 5.dp),
+                            color = Color.Black,
+                            fontSize = 15.sp,
+                            fontWeight = FontWeight.Medium,
+                            fontFamily = poppinsFontFamily
+                        )
+                    }
+                }
+
+
             Row(
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 2.dp)
@@ -120,7 +179,7 @@ fun HomeScreen(navController: NavHostController) {
                     modifier = Modifier
                         .size(120.dp, 45.dp)
                         .clip(RoundedCornerShape(18.dp))
-                        .background(Color(0xFF118114))
+                        .background(Color.DarkGray)
                         .clickable {
                             navController.navigate(Routes.CreateOrder.routes) {
                                 popUpTo(navController.graph.startDestinationId)
@@ -139,7 +198,16 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 }
             }
-            LiveOrders()
+
+            val orderViewModel: CreatedOrdersViewModel = viewModel()
+            val userId = orderViewModel.getCurrentUserId()
+            if (userId != null) {
+                LiveOrders(
+                    orderViewModel,
+                    userId = userId,
+                    navController = navController
+                )
+            }
         }
     }
 }
