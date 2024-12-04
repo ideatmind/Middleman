@@ -26,12 +26,4 @@ object SharedPref {
         val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
         return sharedPreferences.getString("username","")!!
     }
-    fun getUserEmail(context: Context) : String {
-        val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
-        return sharedPreferences.getString("email","")!!
-    }
-    fun getUserOtp(context: Context) : String {
-        val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
-        return sharedPreferences.getString("otp","")!!
-    }
 }

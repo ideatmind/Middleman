@@ -14,13 +14,8 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -33,7 +28,6 @@ import androidx.navigation.compose.rememberNavController
 import com.middleman.contracts.R
 import com.middleman.contracts.model.BottomNavigation
 import com.middleman.contracts.navigation.Routes
-import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @Composable

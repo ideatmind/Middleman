@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddTask
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.DonutLarge
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
@@ -28,7 +31,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -40,7 +42,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.middleman.contracts.model.OrderModel
 import com.middleman.contracts.navigation.Routes
@@ -56,6 +57,8 @@ import java.util.Locale
 fun Orders(viewModel: CreatedOrdersViewModel, userId: String, navController: NavHostController) {
     val orders = remember { mutableStateListOf<OrderModel>() }
     val isLoading = remember { mutableStateOf(true) }
+    var isBuyOrdersSelected by remember { mutableStateOf(false) }
+    var isSellOrdersSelected by remember { mutableStateOf(true) }
 
     viewModel.fetchOrdersByUserId(userId) { fetchedOrders ->
         orders.clear()
@@ -109,33 +112,79 @@ fun Orders(viewModel: CreatedOrdersViewModel, userId: String, navController: Nav
             )
         }
     ) { paddingValues ->
-        LazyColumn(modifier = Modifier.fillMaxSize().padding(paddingValues)) {
-            item {
-                if (isLoading.value) {
-                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                        Text(
-                            text = "Loading orders...",
-                            color = Color.Black,
-                            fontFamily = poppinsFontFamily,
-                            modifier = Modifier.fillMaxSize().padding(16.dp)
-                        )
-                    }
-                } else {
-                    Spacer(modifier = Modifier.height(8.dp))
+
+        Column(Modifier.fillMaxSize().padding(paddingValues)) {
+
+            Row(Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(160.dp, 55.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background( if (isSellOrdersSelected)Color.Black else Color.LightGray)
+                        .clickable {
+                            isSellOrdersSelected = true
+                            isBuyOrdersSelected = false
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = "Sell Orders",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        color = if (isSellOrdersSelected)Color.White else Color.Black,
+                        fontFamily = ubuntuFontFamily
+                    )
+                }
+
+                Box(
+                    modifier = Modifier
+                        .size(160.dp, 55.dp)
+                        .clip(RoundedCornerShape(18.dp))
+                        .background( if (isBuyOrdersSelected)Color.Black else Color.LightGray)
+                        .clickable {
+                            isBuyOrdersSelected = true
+                            isSellOrdersSelected = false
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier,
+                        text = "Buy Orders",
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 18.sp,
+                        color = if (isBuyOrdersSelected)Color.White else Color.Black,
+                        fontFamily = ubuntuFontFamily
+                    )
                 }
             }
 
-            // Now add the orders directly in the same LazyColumn
-            items(orders.reversed()) { order ->
-                DetailedOrderItem(
-                    sellerName = order.seller,
-                    productName = order.productName,
-                    totalAmount = order.totalAmount,
-                    customerName = order.customer,
-                    productCost = order.productCost,
-                    productQuantity = order.productQuantity,
-                    time = order.timeStamp
-                )
+            LazyColumn(modifier = Modifier.fillMaxSize().padding(top = 5.dp, bottom = 4.dp)) {
+                items(orders.reversed()) { order ->
+                    if (isLoading.value) {
+                        Box(Modifier.fillMaxSize().background(Color.White)) {
+                            Text(
+                                text = "Loading orders...",
+                                color = Color.Black,
+                                fontFamily = poppinsFontFamily,
+                                modifier = Modifier.fillMaxSize().padding(16.dp).wrapContentSize(Alignment.Center)
+                            )
+                        }
+                    }else {
+                        DetailedOrderItem(
+                            sellerName = order.seller,
+                            productName = order.productName,
+                            totalAmount = order.totalAmount,
+                            customerName = order.customer,
+                            productCost = order.productCost,
+                            productQuantity = order.productQuantity,
+                            time = order.timeStamp
+                        )
+                    }
+                }
             }
         }
     }
@@ -232,14 +281,25 @@ fun DetailedOrderItem(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = Color.Gray
                 )
+
+                Box(Modifier.fillMaxWidth().padding(top = 5.dp), contentAlignment = Alignment.Center) {
+                    Button(modifier =  Modifier.height(35.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
+                        onClick = {
+
+                        }) {
+                        Text("Pay", fontFamily = poppinsFontFamily, color = Color.White)
+                    }
+                }
+
+                HorizontalDivider(
+                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
+                    thickness = 1.dp,
+                    color = Color.Gray
+                )
             }
         }
 
-        HorizontalDivider(
-            modifier = Modifier.padding(horizontal = 35.dp, vertical = 7.dp),
-            thickness = 1.dp,
-            color = Color.Gray
-        )
     }
 }
 

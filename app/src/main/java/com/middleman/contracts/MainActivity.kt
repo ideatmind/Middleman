@@ -13,9 +13,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
+import com.google.firebase.auth.FirebaseAuth
 import com.middleman.contracts.navigation.NavGraph
+import com.middleman.contracts.screens.Orders
 import com.middleman.contracts.ui.theme.ContractsTheme
+import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 class MainActivity : ComponentActivity() {
     @SuppressLint("NewApi")
@@ -30,9 +34,9 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     val navController = rememberNavController()
+                    val viewModel : CreatedOrdersViewModel = viewModel()
                     NavGraph(navController)
 
-//                    ForgotPasswordScreen(navController)
                 }
             }
         }

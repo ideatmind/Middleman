@@ -2,6 +2,7 @@ package com.middleman.contracts.screens
 
 import android.annotation.SuppressLint
 import android.widget.Toast
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -20,8 +21,10 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.rounded.AddBox
 import androidx.compose.material.icons.rounded.Money
 import androidx.compose.material.icons.rounded.ProductionQuantityLimits
@@ -49,7 +52,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -60,6 +62,7 @@ import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.viewmodel.AddOrderViewModel
+import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -68,13 +71,24 @@ import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 fun CreateOrder(
     navController: NavHostController
 ) {
+
+    BackHandler {
+        navController.navigate(Routes.BottomNav.routes) {
+            popUpTo(Routes.BottomNav.routes) {
+                inclusive = true
+            }
+        }
+    }
+
     val context = LocalContext.current
 
     val orderViewModel: AddOrderViewModel = viewModel()
     val isPosted by orderViewModel.isPosted.observeAsState(false)
 
     var sellerName by remember { mutableStateOf("") }
+    var sellerPhone by remember { mutableStateOf("") }
     var customerName by remember { mutableStateOf("") }
+    var customerPhone by remember { mutableStateOf("") }
     var productName by remember { mutableStateOf("") }
     var productQuantity by remember { mutableStateOf("") }
     var productCost by remember { mutableStateOf("") }
@@ -89,6 +103,8 @@ fun CreateOrder(
     LaunchedEffect(isPosted) {
         if (isPosted) {
             sellerName = ""
+            sellerPhone = ""
+            customerPhone = ""
             customerName = ""
             productName = ""
             productQuantity = ""
@@ -173,6 +189,36 @@ fun CreateOrder(
                     Spacer(Modifier.height(6.dp))
 
                     OutlinedTextField(
+                        value = sellerPhone,
+                        onValueChange = { sellerPhone = it },
+                        label = { Text("Seller Phone no.", color = Color.DarkGray) }, // Changed to Black
+                        leadingIcon = {
+                            Icon(
+                                Icons.Filled.Phone,
+                                contentDescription = "",
+                                tint = Color.Black // Changed to Black
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedTextColor = Color.Black, // Changed to Black
+                            focusedTextColor = Color.Black, // Changed to Black
+                            cursorColor = Color.Black, // Changed to Black
+                            disabledLeadingIconColor = Color.Gray,
+                            focusedLeadingIconColor = Color.Black, // Changed to Black
+                            focusedPlaceholderColor = Color.Black, // Changed to Black
+                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
+                            disabledTextColor = Color.LightGray,
+                            errorTextColor = Color.Red,
+                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
+                            focusedBorderColor = Color.Black // Changed to Black
+                        )
+                    )
+                    Spacer(Modifier.height(6.dp))
+
+                    OutlinedTextField(
                         value = customerName,
                         onValueChange = { customerName = it },
                         label = {
@@ -190,6 +236,36 @@ fun CreateOrder(
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
+                        colors = TextFieldDefaults.outlinedTextFieldColors(
+                            unfocusedTextColor = Color.Black, // Changed to Black
+                            focusedTextColor = Color.Black, // Changed to Black
+                            cursorColor = Color.Black, // Changed to Black
+                            disabledLeadingIconColor = Color.Gray,
+                            focusedLeadingIconColor = Color.Black, // Changed to Black
+                            focusedPlaceholderColor = Color.Black, // Changed to Black
+                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
+                            disabledTextColor = Color.LightGray,
+                            errorTextColor = Color.Red,
+                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
+                            focusedBorderColor = Color.Black // Changed to Black
+                        )
+                    )
+                    Spacer(Modifier.height(6.dp))
+
+                    OutlinedTextField(
+                        value = customerPhone,
+                        onValueChange = { customerPhone = it },
+                        label = { Text("Buyer Phone no.", color = Color.DarkGray) }, // Changed to Black
+                        leadingIcon = {
+                            Icon(
+                                Icons.Outlined.Phone,
+                                contentDescription = "",
+                                tint = Color.Black // Changed to Black
+                            )
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(24.dp),
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedTextColor = Color.Black, // Changed to Black
                             focusedTextColor = Color.Black, // Changed to Black
@@ -373,13 +449,15 @@ fun CreateOrder(
 
                                 else -> {
                                     orderViewModel.saveData(
-                                        sellerName,
-                                        customerName,
-                                        productName,
-                                        productCost,
-                                        productQuantity,
-                                        totalAmount,
-                                        FirebaseAuth.getInstance().currentUser!!.uid
+                                        seller = sellerName,
+                                        sellerPhone = sellerPhone,
+                                        customer = customerName,
+                                        customerPhone = customerPhone,
+                                        productName = productName,
+                                        productCost = productCost,
+                                        productQuantity = productQuantity,
+                                        totalAmount = totalAmount,
+                                        userId = FirebaseAuth.getInstance().currentUser!!.uid
                                     )
                                     Toast.makeText(
                                         context,
