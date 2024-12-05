@@ -2,6 +2,7 @@ package com.middleman.contracts.utils
 
 import android.content.Context
 import android.content.Context.MODE_PRIVATE
+import com.google.firebase.database.FirebaseDatabase
 
 object SharedPref {
     fun storeData(email: String,
@@ -34,4 +35,9 @@ object SharedPref {
         val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
         return sharedPreferences.getString("otp","")!!
     }
+    fun updateUserName(userId: String, newName: String,context: Context) {
+        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId)
+        databaseReference.child("userName").setValue(newName)
+    }
+
 }

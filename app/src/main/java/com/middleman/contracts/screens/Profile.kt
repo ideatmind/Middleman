@@ -15,6 +15,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.rounded.AddTask
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
+import androidx.compose.material.icons.rounded.Edit
 import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Password
 import androidx.compose.material.icons.rounded.PermIdentity
@@ -31,9 +32,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,12 +48,15 @@ import androidx.navigation.NavHostController
 import com.middleman.contracts.R
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
+import com.middleman.contracts.utils.ProfilePref
+import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Profile(navController : NavHostController) {
 
+    val context = LocalContext.current
     val authViewModel: AuthViewModel = viewModel()
     val firebaseUser by authViewModel.firebaseUser.observeAsState(null)
 
@@ -97,11 +105,11 @@ fun Profile(navController : NavHostController) {
                             modifier = Modifier.padding(horizontal = 8.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Rounded.AddTask,
-                                contentDescription = "Create Order",
+                                imageVector = Icons.Rounded.Edit,
+                                contentDescription = "Add Profile",
                                 modifier = Modifier.size(25.dp)
                                     .clickable {
-                                        navController.navigate(Routes.CreateOrder.routes)
+                                        navController.navigate(Routes.CreateProfile.routes)
                                     }
                             )
                         }
@@ -127,8 +135,7 @@ fun Profile(navController : NavHostController) {
                             imageVector = Icons.Rounded.PermIdentity,
                             contentDescription = "name"
                         )
-                        Text(
-                            "Ganesh Jadhavar",
+                        Text(text = ProfilePref.getName(context),
                             fontFamily = poppinsFontFamily,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
@@ -152,8 +159,7 @@ fun Profile(navController : NavHostController) {
                             imageVector = Icons.Outlined.Email,
                             contentDescription = "email"
                         )
-                        Text(
-                            "Email",
+                        Text(text = SharedPref.getUserEmail(context),
                             fontFamily = poppinsFontFamily,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
@@ -177,8 +183,7 @@ fun Profile(navController : NavHostController) {
                             imageVector = Icons.Rounded.MoneyOff,
                             contentDescription = "Bank"
                         )
-                        Text(
-                            "Bank details",
+                        Text(text = ProfilePref.getBankdetiles(context),
                             fontFamily = poppinsFontFamily,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
@@ -203,7 +208,7 @@ fun Profile(navController : NavHostController) {
                             contentDescription = "password"
                         )
                         Text(
-                            "Change password",
+                            text = ProfilePref.getMobile(context),
                             fontFamily = poppinsFontFamily,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
@@ -229,7 +234,7 @@ fun Profile(navController : NavHostController) {
                             modifier = Modifier.size(24.dp)
                         )
                         Text(
-                            "Transactions",
+                            text = ProfilePref.getShopAddress(context),
                             fontFamily = poppinsFontFamily,
                             fontSize = 20.sp,
                             fontWeight = FontWeight.Normal,
@@ -264,3 +269,4 @@ fun Profile(navController : NavHostController) {
         }
     }
 }
+

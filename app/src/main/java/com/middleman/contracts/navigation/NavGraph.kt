@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.middleman.contracts.screens.BottomNav
 import com.middleman.contracts.screens.CreateOrder
+import com.middleman.contracts.screens.CreateProfile
 import com.middleman.contracts.screens.ForgotPasswordScreen
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
@@ -65,6 +66,9 @@ fun NavGraph(
                     navController = navController
                 )
             }
+        }
+        composable(Routes.CreateProfile.routes){
+            CreateProfile(navController)
         }
 //        composable(Routes.CreatedOrder.routes) { backStackEntry ->
 //            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
