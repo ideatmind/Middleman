@@ -6,11 +6,9 @@ import com.google.firebase.database.FirebaseDatabase
 
 object SharedPref {
     fun storeData(email: String,
-//                  name: String,
                   userName: String,
                   password: String,
                   otp : String,
-//                  imageUri: String,
                   context: Context,
                   uid: String
     ) {
