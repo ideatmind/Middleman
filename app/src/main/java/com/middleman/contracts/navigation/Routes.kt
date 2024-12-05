@@ -6,7 +6,6 @@ sealed class Routes (val routes : String){
     object Profile : Routes("profile")
     object Orders : Routes("orders")
     object CreateOrder : Routes("createOrder")
-    object CreatedOrder : Routes("createdOrder/{userId}")
     object Notifications : Routes("notifications")
     object BottomNav : Routes("bottomNav")
     object Login : Routes("login")

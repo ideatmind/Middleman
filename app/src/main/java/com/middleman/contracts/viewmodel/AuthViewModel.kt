@@ -22,8 +22,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.middleman.contracts.model.UserModel
 import com.middleman.contracts.utils.SharedPref
 import kotlinx.coroutines.launch
@@ -40,8 +38,6 @@ class AuthViewModel: ViewModel() {
 
     private val _error = MutableLiveData<String>()
     val error : LiveData<String> = _error
-
-    private val storageRef = Firebase.storage.reference
 
     init {
         _firebaseUser.value = auth.currentUser

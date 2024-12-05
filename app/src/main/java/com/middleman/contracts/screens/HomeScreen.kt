@@ -6,10 +6,10 @@ import android.app.Activity
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -46,6 +46,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.middleman.contracts.R
+import com.middleman.contracts.components.BlinkingDot
 import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
@@ -165,15 +166,24 @@ fun HomeScreen(navController: NavHostController) {
                 modifier = Modifier
                     .padding(start = 20.dp, end = 20.dp, top = 20.dp, bottom = 2.dp)
                     .fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(
-                    text = "Live Orders",
-                    modifier = Modifier.padding(5.dp),
-                    fontSize = 20.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = ubuntuFontFamily
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    BlinkingDot()
+
+                    Text(
+                        text = "Live Orders",
+                        modifier = Modifier
+                            .padding(start = 8.dp, end = 5.dp),
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = ubuntuFontFamily
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
 
                 Box(
                     modifier = Modifier

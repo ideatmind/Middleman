@@ -4,8 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.database.FirebaseDatabase
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.ktx.storage
 import com.middleman.contracts.model.OrderModel
 
 class AddOrderViewModel: ViewModel() {
@@ -19,9 +17,7 @@ class AddOrderViewModel: ViewModel() {
     private val _isPosted = MutableLiveData<Boolean>()
     val isPosted : LiveData<Boolean> = _isPosted
 
-    private val storageRef = Firebase.storage.reference
-
-//    fun saveImage(
+    //    fun saveImage(
 //        thread: String,
 //        userId: String,
 //        imageUri: Uri
@@ -36,7 +32,9 @@ class AddOrderViewModel: ViewModel() {
 
     fun saveData(
         seller: String,
+        sellerPhone: String,
         customer: String,
+        customerPhone: String,
         productName: String,
         productCost: String,
         productQuantity: String,
@@ -45,7 +43,9 @@ class AddOrderViewModel: ViewModel() {
     ) {
         val orderData = OrderModel(
             seller,
+            sellerPhone,
             customer,
+            customerPhone,
             productName,
             productCost,
             productQuantity,

@@ -1,6 +1,5 @@
 package com.middleman.contracts.components
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,21 +10,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowDownward
 import androidx.compose.material.icons.rounded.DonutLarge
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,34 +55,46 @@ fun LiveOrders(viewModel: CreatedOrdersViewModel, userId: String, navController:
         modifier = Modifier
             .height(900.dp)
             .padding(20.dp),
-        shape = RoundedCornerShape(12.dp)
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(Color.White)
     ) {
         Box() {
             if (isLoading.value) {
-                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                Box(Modifier.fillMaxSize().background(Color.White), contentAlignment = Alignment.Center) {
                     Text(
                         text = "Loading orders...",
                         color = Color.Black,
                         fontFamily = poppinsFontFamily,
-                        modifier = Modifier.fillMaxSize().padding(16.dp)
+                        modifier = Modifier.fillMaxSize().padding(16.dp).wrapContentSize(Alignment.Center)
                     )
                 }
             } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(12.dp))
-                        .background(Color.White)
-                ) {
-                    items(orders.reversed()) { order ->
-                        OrderItem(
-                            sellerName = order.seller,
-                            productName = order.productName,
-                            totalAmount = order.totalAmount,
-                            navHostController = navController
-                        )
+                if (orders.isEmpty()) {
+                    // Display a message or a placeholder when the list is empty
+                    Text(
+                        text = "No orders available",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center), // Center the text
+                        color = Color.Gray, // Optional: Change the color to indicate emptiness
+                        fontSize = 20.sp // Optional: Adjust font size
+                    )
+                } else {
+                    LazyColumn(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(Color.White)
+                    ) {
+                        items(orders.reversed()) { order ->
+                            OrderItem(
+                                sellerName = order.seller,
+                                productName = order.productName,
+                                totalAmount = order.totalAmount,
+                                navHostController = navController
+                            )
+                        }
                     }
-
                 }
             }
         }

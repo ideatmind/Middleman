@@ -48,6 +48,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.google.firebase.Firebase
+import com.google.firebase.auth.auth
 import com.middleman.contracts.R
 import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.navigation.Routes
@@ -66,6 +68,8 @@ fun RegisterScreen(navController: NavHostController) {
     val context = LocalContext.current
     val authViewModel : AuthViewModel = viewModel()
     val firebaseUser by authViewModel.firebaseUser.observeAsState(null)
+
+    var user by remember { mutableStateOf(Firebase.auth.currentUser) }
 
     val permissionToRequest = if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
         Manifest.permission.READ_MEDIA_IMAGES
@@ -187,7 +191,7 @@ fun RegisterScreen(navController: NavHostController) {
                         OutlinedTextField(
                             value = username,
                             onValueChange = { username = it },
-                            label = { Text("Username", color = Color.White) },
+                            label = { Text("Your name", color = Color.White) },
                             leadingIcon = {
                                 Icon(Icons.Outlined.Person, contentDescription = "Username Icon", tint = Color.White)
                             },

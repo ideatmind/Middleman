@@ -137,13 +137,13 @@ fun LoginScreen(navController: NavHostController) {
         }
     }
 
-    LaunchedEffect(user) {
+    LaunchedEffect(user?.email) {
         if(user != null) {
             navController.navigate(Routes.BottomNav.routes) {
                 popUpTo(navController.graph.startDestinationId)
                 launchSingleTop = true
             }
-            Toast.makeText(context, "Logging in with ${user!!.email}", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Logging in with ${user!!.email}", Toast.LENGTH_LONG).show()
         }
     }
 
@@ -325,7 +325,27 @@ fun LoginScreen(navController: NavHostController) {
                         }
                     }
 
-                    HorizontalDivider(Modifier.padding(vertical = 20.dp, horizontal = 24.dp), color = Color.LightGray)
+                    Spacer(modifier = Modifier.height(2.dp))
+
+                    // Terms of Service Text
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Text("Don't have an account!", color = Color.White, fontSize = 14.sp)
+                        TextButton (onClick = {
+                            navController.navigate(Routes.Register.routes) {
+                                popUpTo(navController.graph.startDestinationId)
+                                launchSingleTop = true
+                            }
+                        }){
+                            Text("Register here",
+                                fontSize = 14.sp,
+                                color = Color(0xFF64B5F6)
+                            )
+                        }
+                    }
+
+                    HorizontalDivider(Modifier.padding(horizontal = 24.dp).padding(top = 10.dp, bottom = 20.dp), color = Color.LightGray)
 
                     Button(onClick = {
                         if(user == null) {
@@ -353,26 +373,6 @@ fun LoginScreen(navController: NavHostController) {
                                 painter = painterResource(id = R.drawable.google_icon),
                                 contentDescription = null,
                                 modifier = Modifier.size(30.dp)
-                            )
-                        }
-                    }
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Terms of Service Text
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text("Don't have an account!", color = Color.White, fontSize = 14.sp)
-                        TextButton (onClick = {
-                            navController.navigate(Routes.Register.routes) {
-                                popUpTo(navController.graph.startDestinationId)
-                                launchSingleTop = true
-                            }
-                        }){
-                            Text("Register here",
-                                fontSize = 14.sp,
-                                color = Color(0xFF64B5F6)
                             )
                         }
                     }
