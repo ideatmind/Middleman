@@ -43,7 +43,6 @@ class PorfileAddViewModel:ViewModel() {
         updatedData: Map<String, Any>,
         context: Context
     ) {
-        val profileData = ProfileModel(name,mobile,bankDetails,shopAddress,userId)
         profileRef.child(userId).updateChildren(updatedData)
             .addOnSuccessListener {
                 _isAdded.postValue(true)
