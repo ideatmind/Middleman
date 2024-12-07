@@ -32,33 +32,31 @@ class AddOrderViewModel: ViewModel() {
 
     fun saveData(
         seller: String,
-//        sellerPhone: String,
         sellerEmail: String,
         customer: String,
         customerEmail: String,
-//        customerPhone: String,
-        orderId: String,
         productName: String,
         productCost: String,
         productQuantity: String,
         totalAmount: String,
         userId: String,
     ) {
+        val orderKey = userRef.push().key ?: return // Get the key for the new order
+
         val orderData = OrderModel(
             seller = seller,
             sellerEmail = sellerEmail,
             customer = customer,
-            orderKey = orderId,
+            orderKey = orderKey, // Use the generated orderKey here
             customerEmail = customerEmail,
             productName = productName,
             productCost = productCost,
             productQuantity = productQuantity,
             totalAmount = totalAmount,
             userId = userId,
-            timeStamp =  System.currentTimeMillis().toString()
+            timeStamp = System.currentTimeMillis().toString()
         )
 
-        val orderKey = userRef.push().key ?: return // Get the key for the new order
         userRef.child(orderKey).setValue(orderData)
             .addOnSuccessListener {
                 _isPosted.postValue(true)
@@ -66,9 +64,8 @@ class AddOrderViewModel: ViewModel() {
             }.addOnFailureListener {
                 _isPosted.postValue(false)
             }
-
-
     }
+
 
 
 }

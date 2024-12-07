@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -31,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -39,7 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
@@ -59,13 +64,12 @@ fun OrderDetails(
     orderKey: String,
     navController: NavHostController
 ) {
-    val orders = remember { mutableStateListOf<OrderModel>() }
-    val isLoading = remember { mutableStateOf(true) }
+    val orderDetails by viewModel.getOrderById(orderKey).observeAsState(initial = null)
+    val isLoading = remember { mutableStateOf(orderDetails == null) }
 
-
-    viewModel.fetchOrdersByOrderId(orderKey) { fetchedOrders ->
-        orders.clear()
-        orders.addAll(fetchedOrders)
+    if (orderDetails == null) {
+        isLoading.value = true
+    } else {
         isLoading.value = false
     }
 
@@ -121,41 +125,36 @@ fun OrderDetails(
                 .fillMaxSize()
                 .padding(paddingValues)) {
 
-            LazyColumn(modifier = Modifier
-                .fillMaxSize()
-                .padding(top = 5.dp, bottom = 4.dp)) {
-                items(orders.reversed()) { order ->
-                    if (isLoading.value) {
-                        Box(
-                            Modifier
-                                .fillMaxSize()
-                                .background(Color.White)) {
-                            Text(
-                                text = "Loading orders...",
-                                color = Color.Black,
-                                fontFamily = poppinsFontFamily,
-                                modifier = Modifier
-                                    .fillMaxSize()
-                                    .padding(16.dp)
-                                    .wrapContentSize(Alignment.Center)
-                            )
-                        }
-                    }else {
-                        Log.d("Order details", orderKey)
-                        OrderDetailsItem(
-                            seller = order.seller,
-                            sellerEmail = order.sellerEmail,
-                            customer = order.customer,
-                            customerEmail = order.customerEmail,
-                            productName = order.productName,
-                            productCost = order.productCost,
-                            productQuantity = order.productQuantity,
-                            totalAmount = order.totalAmount,
-                            userId = order.userId,
-                            orderKey = order.orderKey,
-                            time = order.timeStamp
-                        )
-                    }
+            if (isLoading.value) {
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .background(Color.White)
+                ) {
+                    Text(
+                        text = "Loading order details...",
+                        color = Color.Black,
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center)
+                    )
+                }
+            } else {
+                orderDetails?.let { order ->
+                    // Display the order details using the OrderDetailsItem composable
+                    OrderDetailsItem(
+                        seller = order.seller,
+                        sellerEmail = order.sellerEmail,
+                        customer = order.customer,
+                        customerEmail = order.customerEmail,
+                        productName = order.productName,
+                        productCost = order.productCost,
+                        productQuantity = order.productQuantity,
+                        totalAmount = order.totalAmount,
+                        userId = order.userId,
+                        orderKey = order.orderKey,
+                        time = order.timeStamp
+                    )
                 }
             }
         }
@@ -165,135 +164,258 @@ fun OrderDetails(
 
 @Composable
 fun OrderDetailsItem(
-     seller: String ,
-     sellerEmail: String ,
-     customer: String ,
-     customerEmail: String ,
-     productName: String ,
-     productCost: String ,
-     productQuantity: String ,
-     totalAmount: String ,
-     userId: String ,
-     orderKey: String,
-     time : String
+    seller: String,
+    sellerEmail: String,
+    customer: String,
+    customerEmail: String,
+    productName: String,
+    productCost: String,
+    productQuantity: String,
+    totalAmount: String,
+    userId: String,
+    orderKey: String,
+    time: String
 ) {
-    Column(
-        Modifier
+    Box(
+        modifier = Modifier
             .fillMaxWidth()
-            .clickable {
-
-            }, horizontalAlignment = Alignment.Start) {
-
-            Column {
-
-                Text(
-                    text = "Order Id: $orderKey",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 19.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.DarkGray
-                )
-
-                Row {
-                    Text(
-                        text = "Product: $productName",
-                        fontFamily = ubuntuFontFamily,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = Color.DarkGray
-                    )
-                    val timeAndDate = try {
-                        formatTimestamp(time.toLong())
-                    } catch (e: NumberFormatException) {
-                        "Invalid date"
+            .padding(16.dp), // Add padding to the Box
+        contentAlignment = Alignment.Center
+    ) {
+        Column(horizontalAlignment = Alignment.Start) {
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 19.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Order Id: ")
                     }
-                    Text(
-                        text = "( $timeAndDate )",
-                        fontFamily = poppinsFontFamily,
-                        fontSize = 12.sp,
-                        fontWeight = FontWeight.Normal,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = Color.Gray
-                    )
-                }
-                Text(
-                    text = "Seller: $seller",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.DarkGray
-                )
-                Text(
-                    text = "Buyer: $customer",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 15.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.DarkGray
-                )
-                Text(
-                    text = "Seller Email: $sellerEmail",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.DarkGray
-                )
-                Text(
-                    text = "Customer Email: $customerEmail",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 14.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.DarkGray
-                )
-                Text(
-                    text = "Cost per unit: $productCost",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-                Text(
-                    text = "Product Quantity: $productQuantity",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-                Text(
-                    text = "Payment Amount: $totalAmount",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-
-                Box(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(top = 5.dp), contentAlignment = Alignment.Center) {
-                    Button(modifier =  Modifier.height(35.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
-                        onClick = {
-
-                        }) {
-                        Text("Pay", fontFamily = poppinsFontFamily, color = Color.White)
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 16.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append("( $orderKey )")
                     }
-                }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 17.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Product: ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 16.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append(productName)
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
 
-                HorizontalDivider(
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
-                    thickness = 1.dp,
-                    color = Color.Gray
-                )
+            val timeAndDate = try {
+                formatTimestamp(time.toLong())
+            } catch (e: NumberFormatException) {
+                "Invalid date"
+            }
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 12.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("( Date and Time: ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 12.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append("$timeAndDate )")
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Seller Name:  ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 15.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append(seller)
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 16.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Customer Name:  ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 15.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append(customer)
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 15.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Seller Email:  ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 13.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append(sellerEmail)
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+            Text(
+                text = buildAnnotatedString {
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.SemiBold,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 15.sp,
+                            color = Color.Black
+                        )
+                    ) {
+                        append("Customer Email:  ")
+                    }
+                    withStyle(
+                        style = SpanStyle(
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 13.sp,
+                            color = Color.DarkGray
+                        )
+                    ) {
+                        append(customerEmail)
+                    }
+                },
+                modifier = Modifier.padding(bottom = 8.dp) // Add spacing below
+            )
+            Text(
+                text = "Cost per unit: $productCost",
+                fontFamily = poppinsFontFamily,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(bottom = 8.dp), // Add spacing below
+                color = Color.Gray
+            )
+            Text(
+                text = "Product Quantity: $productQuantity",
+                fontFamily = poppinsFontFamily,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(bottom = 8.dp), // Add spacing below
+                color = Color.Gray
+            )
+            Text(
+                text = "Payment Amount: $totalAmount",
+                fontFamily = poppinsFontFamily,
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Normal,
+                modifier = Modifier.padding(bottom = 8.dp), // Add spacing below
+                color = Color.Gray
+            )
+
+            Spacer(modifier = Modifier.height(28.dp)) // Add spacing before the button
+
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .padding(top = 5.dp), contentAlignment = Alignment.Center
+            ) {
+                Button(
+                    modifier = Modifier.height(35.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
+                    onClick = {
+                        // Handle button click
+                    }
+                ) {
+                    Text("Pay $totalAmount", fontFamily = poppinsFontFamily, color = Color.White)
+                }
             }
 
+            Spacer(modifier = Modifier.height(18.dp)) // Add spacing before the divider
+
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),
+                thickness = 1.dp,
+                color = Color.Gray
+            )
+        }
     }
 }
+

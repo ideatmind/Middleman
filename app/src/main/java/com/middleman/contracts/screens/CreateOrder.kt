@@ -58,6 +58,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.middleman.contracts.model.OrderModel
 import com.middleman.contracts.navigation.Routes
@@ -101,9 +102,9 @@ fun CreateOrder(
     val sellerEmail by remember { mutableStateOf(SharedPref.getEmail(context)) }
     var customerEmail by remember { mutableStateOf("") }
 
-    val permissionLauncher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean -> }
+//    val permissionLauncher = rememberLauncherForActivityResult(
+//        contract = ActivityResultContracts.RequestPermission()
+//    ) { isGranted: Boolean -> }
 
     LaunchedEffect(isPosted) {
         if (isPosted) {
@@ -452,8 +453,6 @@ fun CreateOrder(
                                 ).show()
 
                                 else -> {
-                                    // Set the orderId and show the dialog
-                                    orderId = orderViewModel.orderKey.value ?: ""
 
                                     orderViewModel.saveData(
                                         seller = sellerName,
@@ -464,7 +463,7 @@ fun CreateOrder(
                                         productCost = productCost,
                                         productQuantity = productQuantity,
                                         totalAmount = totalAmount,
-                                        orderId = orderId,
+//                                        orderKey = orderId,
                                         userId = FirebaseAuth.getInstance().currentUser!!.uid,
                                         sellerEmail = sellerEmail,
                                         customerEmail = customerEmail,
@@ -509,7 +508,7 @@ fun CreateOrder(
 
     // Show the CreatedOrder dialog if showDialog is true
     if (showDialog) {
-        CreatedOrder(orderId) {
+        CreatedOrder(orderId = orderId) {
             showDialog = false // Close the dialog when "Ok" is clicked
         }
     }
@@ -518,11 +517,12 @@ fun CreateOrder(
 @Composable
 fun CreatedOrder(
     orderId: String,
-    onDismiss: () -> Unit // Callback to dismiss the dialog
+    onDismiss: () -> Unit,
 ) {
     // State to control the visibility of the dialog
     val createdOrdersViewModel: CreatedOrdersViewModel = viewModel()
     val orderDetails by createdOrdersViewModel.getOrderById(orderId).observeAsState(null)
+    val navController = rememberNavController()
 
     // AlertDialog to display order details
     AlertDialog(
@@ -552,7 +552,11 @@ fun CreatedOrder(
         confirmButton = {
             Button(
                 onClick = {
-                    onDismiss() // Close the dialog when "Ok" is clicked
+                    navController.navigate(Routes.BottomNav.routes) {
+                        popUpTo(Routes.BottomNav.routes) {
+                            inclusive = true
+                        }
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(Color.Black)
             ) {

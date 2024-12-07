@@ -158,25 +158,6 @@ class CreatedOrdersViewModel: ViewModel() {
 
 
 
-    fun fetchOrdersByOrderId(orderKey: String, onResult: (List<OrderModel>) -> Unit) {
-        db.getReference("orders").equalTo(orderKey)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val orders = mutableListOf<OrderModel>()
-                    for (orderSnapshot in snapshot.children) {
-                        val order = orderSnapshot.getValue(OrderModel::class.java)
-                        order?.let { orders.add(it) }
-                    }
-                    onResult(orders)
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    Log.e("CreatedOrdersViewModel", "Error fetching orders: ${error.message}")
-                    onResult(emptyList())
-                }
-            })
-    }
-
 
 
 

@@ -60,16 +60,16 @@ fun NavGraph(
             ForgotPasswordScreen(navController)
         }
 
-        composable(Routes.OrderDetails.routes) {
+        composable("${Routes.OrderDetails.routes}/{orderKey}") { backStackEntry ->
             val viewModel: CreatedOrdersViewModel = viewModel()
-            val orderViewModel: AddOrderViewModel = viewModel()
-            val orderId = orderViewModel.orderKey.value ?: ""
+            val orderKey = backStackEntry.arguments?.getString("orderKey") ?: ""
             OrderDetails(
                 viewModel = viewModel,
-                orderKey = orderId,
+                orderKey = orderKey,
                 navController = navController
             )
         }
+
 
         composable(Routes.Orders.routes) {
             val context = LocalContext.current
