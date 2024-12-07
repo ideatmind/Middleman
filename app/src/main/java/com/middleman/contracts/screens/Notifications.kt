@@ -23,20 +23,38 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import com.middleman.contracts.model.NotificationModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
+import com.middleman.contracts.utils.SharedPref
+import com.middleman.contracts.viewmodel.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun Notifications(navController : NavHostController) {
+fun Notifications(navController: NavHostController, notificationViewModel: NotificationViewModel = viewModel()) {
+    val userPhone = SharedPref.getPhone(LocalContext.current) // Get the current user's email
+    val notifications = remember { mutableStateListOf<NotificationModel>() }
 
+    LaunchedEffect(userPhone) {
+        notificationViewModel.fetchNotifications(userPhone) { fetchedNotifications ->
+            notifications.clear()
+            notifications.addAll(fetchedNotifications)
+        }
+    }
     Column {
 
         Scaffold(
@@ -86,29 +104,20 @@ fun Notifications(navController : NavHostController) {
             }
         ) {paddingValues ->
 
-            val notifications = listOf(
-                NotificationData( notificationName = "Notification1", notificationDescription = "Description1"),
-                NotificationData(notificationName = "Notification2", notificationDescription = "Description2"),
-                NotificationData( notificationName = "Notification3", notificationDescription = "Description3"),
-                NotificationData( notificationName = "Notification4", notificationDescription = "Description4")
-            )
-
             Column(
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
             ) {
-                notifications.forEach { items ->
-                        NotificationItem(
-                            notificationName = items.notificationName,
-                            notificationDescription = items.notificationDescription
-                        )
+                (notifications.reversed()).forEach { item ->
+                    NotificationItem(
+                        notificationName = item.notificationName,
+                        notificationDescription = item.notificationDescription
+                    )
                 }
 
                 Spacer(Modifier.height(25.dp))
-
-
-        }
+            }
     }
     }
 }
@@ -160,9 +169,3 @@ fun NotificationItem(
         )
     }
 }
-
-
-data class NotificationData(
-    val notificationName: String,
-    val notificationDescription: String
-)

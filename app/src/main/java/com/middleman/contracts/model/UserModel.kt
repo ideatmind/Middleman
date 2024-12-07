@@ -2,6 +2,7 @@ package com.middleman.contracts.model
 
 data class UserModel(
     val email: String = "",
+    val phoneNo: String = "",
     val password: String = "",
 //    val name: String = "",
     val userName: String = "",

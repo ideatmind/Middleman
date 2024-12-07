@@ -6,6 +6,7 @@ data class OrderModel(
     val sellerEmail: String = "",
     val customer: String = "",
     val customerEmail: String = "",
+    val customerPhone: String = "",
     val productName: String = "",
     val orderKey: String = "",
     val productCost: String = "",

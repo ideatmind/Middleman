@@ -9,11 +9,13 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowForwardIos
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.outlined.Person
+import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.outlined.Visibility
 import androidx.compose.material.icons.outlined.VisibilityOff
 import androidx.compose.material3.Button
@@ -41,6 +43,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
@@ -62,6 +65,7 @@ fun RegisterScreen(navController: NavHostController) {
 
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
+    var phoneNo by remember { mutableStateOf("") }
     var otp by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -239,6 +243,40 @@ fun RegisterScreen(navController: NavHostController) {
                             )
                         )
 
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        OutlinedTextField(
+                            value = phoneNo,
+                            onValueChange = {
+                                if (it.length <= 10) phoneNo = it else Toast.makeText(
+                                    context,
+                                    "Only 10 characters allowed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            label = { Text("Phone Number", color = Color.White) },
+                            leadingIcon = {
+                                Icon(Icons.Outlined.Phone, contentDescription = "Phone Icon", tint = Color.White)
+                            },
+                            modifier = Modifier.fillMaxWidth(),
+                            shape = RoundedCornerShape(24.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedTextColor = Color.White,
+                                focusedTextColor = Color.White,
+                                cursorColor = Color.White,
+                                disabledLeadingIconColor = Color.Gray,
+                                focusedLeadingIconColor = Color.White,
+                                focusedPlaceholderColor = Color.White,
+                                unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Darker placeholder
+                                disabledTextColor = Color.LightGray,
+                                errorTextColor = Color.Red,
+                                unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Darker icon
+                                focusedBorderColor = Color.White,
+                            )
+                        )
+
                         Spacer(modifier = Modifier.height(8.dp))
 
 // OTP Field
@@ -315,6 +353,7 @@ fun RegisterScreen(navController: NavHostController) {
                                 when {
                                     username.isEmpty() -> Toast.makeText(context, "Username is empty", Toast.LENGTH_SHORT).show()
                                     email.isEmpty() -> Toast.makeText(context, "Email is empty", Toast.LENGTH_SHORT).show()
+                                    email.isEmpty() -> Toast.makeText(context, "Email is empty", Toast.LENGTH_SHORT).show()
                                     otp.isEmpty() -> Toast.makeText(context, "OTP is empty", Toast.LENGTH_SHORT).show()
                                     password.isEmpty() -> Toast.makeText(context, "Password is empty", Toast.LENGTH_SHORT).show()
                                     else -> {// Verify OTP
@@ -325,7 +364,8 @@ fun RegisterScreen(navController: NavHostController) {
                                             password = password,
                                             otp = otp,
                                             userName = username,
-                                            context = context
+                                            context = context,
+                                            phoneNo = phoneNo
                                         )
                                     }
                                 }

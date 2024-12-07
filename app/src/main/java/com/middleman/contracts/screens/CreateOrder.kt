@@ -20,11 +20,13 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Call
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.LocalPhone
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.rounded.AddBox
@@ -50,6 +52,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -60,6 +63,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import com.middleman.contracts.model.NotificationModel
 import com.middleman.contracts.model.OrderModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
@@ -68,12 +72,14 @@ import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.AddOrderViewModel
 import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
+import com.middleman.contracts.viewmodel.NotificationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CreateOrder(
-    navController: NavHostController
+    navController: NavHostController,
+    notificationViewModel: NotificationViewModel = viewModel()
 ) {
 
     BackHandler {
@@ -90,25 +96,25 @@ fun CreateOrder(
     val isPosted by orderViewModel.isPosted.observeAsState(false)
 
     val sellerName by remember { mutableStateOf(SharedPref.getUserName(context)) }
-//    var sellerPhone by remember { mutableStateOf("") }
+    var sellerPhone by remember { mutableStateOf(SharedPref.getPhone(context)) }
     var customerName by remember { mutableStateOf("") }
-//    var customerPhone by remember { mutableStateOf("") }
+    var customerPhone by remember { mutableStateOf("") }
     var productName by remember { mutableStateOf("") }
     var productQuantity by remember { mutableStateOf("") }
     var productCost by remember { mutableStateOf("") }
     var totalAmount by remember { mutableStateOf("") }
-    var showDialog by remember { mutableStateOf(false) } // State to control dialog visibility
-    var orderId by remember { mutableStateOf("") } // State to hold the order ID
+    var showDialog by remember { mutableStateOf(false) }
+    var orderId by remember { mutableStateOf("") }
     val sellerEmail by remember { mutableStateOf(SharedPref.getEmail(context)) }
     var customerEmail by remember { mutableStateOf("") }
 
-//    val permissionLauncher = rememberLauncherForActivityResult(
-//        contract = ActivityResultContracts.RequestPermission()
-//    ) { isGranted: Boolean -> }
+
 
     LaunchedEffect(isPosted) {
         if (isPosted) {
             customerEmail = ""
+            customerPhone = ""
+            sellerPhone = ""
             customerName = ""
             productName = ""
             productQuantity = ""
@@ -121,6 +127,11 @@ fun CreateOrder(
             orderId = orderViewModel.orderKey.value ?: ""
             showDialog = true // Show the dialog
         }
+    }
+
+
+    fun encodeEmail(email: String): String {
+        return email.replace(".", "_") // Replace '.' with '_'
     }
 
     Scaffold(
@@ -162,157 +173,94 @@ fun CreateOrder(
                     .background(Color.White, shape = RoundedCornerShape(16.dp))
                     .padding(16.dp),
             ) {
-                Column {
-                    OutlinedTextField(
-                        value = sellerName,
-                        onValueChange = {},
-                        label = { Text("Your (Seller) name", color = Color.DarkGray) }, // Changed to Black
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Person,
-                                contentDescription = "Username Icon",
-                                tint = Color.Black // Changed to Black
-                            )
-                        },
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(16.dp), // Add padding to the column
+                    verticalArrangement = Arrangement.spacedBy(8.dp) // Space between each item
+                ) {
+                    // Customer Name and Phone
+                    Row(
                         modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black, // Changed to Black
-                            focusedTextColor = Color.Black, // Changed to Black
-                            cursorColor = Color.Black, // Changed to Black
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black, // Changed to Black
-                            focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color.Black, // Keeping this as is
-                            disabledTextColor = Color.Black,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color.Gray, // Keeping this as is
-                            focusedBorderColor = Color.Black // Changed to Black
-                        ),
-                        enabled = false
-                    )
-                    Spacer(Modifier.height(6.dp))
-
-                    OutlinedTextField(
-                        value = sellerEmail,
-                        onValueChange = { },
-                        label = { Text("Your (Seller) Email", color = Color.DarkGray) }, // Changed to Black
-                        leadingIcon = {
-                            Icon(
-                                Icons.Filled.Email,
-                                contentDescription = "",
-                                tint = Color.Black // Changed to Black
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        OutlinedTextField(
+                            value = customerName,
+                            onValueChange = { customerName = it },
+                            label = { Text("Customer Name", color = Color.DarkGray) },
+                            leadingIcon = {
+                                Icon(Icons.Outlined.Person, contentDescription = "Customer Icon", tint = Color.Black)
+                            },
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 8.dp), // Use weight for equal distribution
+                            shape = RoundedCornerShape(24.dp),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedTextColor = Color.Black,
+                                focusedTextColor = Color.Black,
+                                cursorColor = Color.Black,
+                                focusedBorderColor = Color.Black
                             )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black, // Changed to Black
-                            focusedTextColor = Color.Black, // Changed to Black
-                            cursorColor = Color.Black, // Changed to Black
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black, // Changed to Black
-                            focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color.Black, // Keeping this as is
-                            disabledTextColor = Color.Black,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color.Gray, // Keeping this as is
-                            focusedBorderColor = Color.Black // Changed to Black
-                        ),
-                        enabled = false
-                    )
-                    Spacer(Modifier.height(6.dp))
-
-                    OutlinedTextField(
-                        value = customerName,
-                        onValueChange = { customerName = it },
-                        label = {
-                            Text(
-                                "Customer name",
-                                color = Color.DarkGray
-                            )
-                        }, // Changed to Black
-                        leadingIcon = {
-                            Icon(
-                                Icons.Outlined.Person,
-                                contentDescription = "Customer Icon",
-                                tint = Color.Black // Changed to Black
-                            )
-                        },
-                        modifier = Modifier.fillMaxWidth(),
-                        shape = RoundedCornerShape(24.dp),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black, // Changed to Black
-                            focusedTextColor = Color.Black, // Changed to Black
-                            cursorColor = Color.Black, // Changed to Black
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black, // Changed to Black
-                            focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
-                            disabledTextColor = Color.LightGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
-                            focusedBorderColor = Color.Black // Changed to Black
                         )
-                    )
-                    Spacer(Modifier.height(6.dp))
 
+                        OutlinedTextField(
+                            value = customerPhone,
+                            onValueChange = {
+                                if (it.length <= 10) customerPhone = it else Toast.makeText(
+                                    context,
+                                    "Only 10 characters allowed",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            },
+                            label = { Text("Customer Phone", color = Color.DarkGray) },
+                            leadingIcon = {
+                                Icon(Icons.Outlined.LocalPhone, contentDescription = "Phone Icon", tint = Color.Black)
+                            },
+                            modifier = Modifier.weight(1f), // Use weight for equal distribution
+                            shape = RoundedCornerShape(24.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                            colors = TextFieldDefaults.outlinedTextFieldColors(
+                                unfocusedTextColor = Color.Black,
+                                focusedTextColor = Color.Black,
+                                cursorColor = Color.Black,
+                                focusedBorderColor = Color.Black
+                            )
+                        )
+                    }
+
+                    // Customer Email
                     OutlinedTextField(
                         value = customerEmail,
                         onValueChange = { customerEmail = it },
-                        label = { Text("Customer Email Id", color = Color.DarkGray) }, // Changed to Black
+                        label = { Text("Customer Email Id", color = Color.DarkGray) },
                         leadingIcon = {
-                            Icon(
-                                Icons.Outlined.Email,
-                                contentDescription = "",
-                                tint = Color.Black // Changed to Black
-                            )
+                            Icon(Icons.Outlined.Email, contentDescription = "Email Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black, // Changed to Black
-                            focusedTextColor = Color.Black, // Changed to Black
-                            cursorColor = Color.Black, // Changed to Black
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black, // Changed to Black
-                            focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
-                            disabledTextColor = Color.LightGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
-                            focusedBorderColor = Color.Black // Changed to Black
+                            unfocusedTextColor = Color.Black,
+                            focusedTextColor = Color.Black,
+                            cursorColor = Color.Black,
+                            focusedBorderColor = Color.Black
                         )
                     )
-                    Spacer(Modifier.height(6.dp))
 
+                    // Product Name
                     OutlinedTextField(
                         value = productName,
                         onValueChange = { productName = it },
-                        label = {
-                            Text(
-                                "Product name",
-                                color = Color.DarkGray
-                            )
-                        }, // Changed to Black
+                        label = { Text("Product Name", color = Color.DarkGray) },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black, // Changed to Black
-                            focusedTextColor = Color.Black, // Changed to Black
-                            cursorColor = Color.Black, // Changed to Black
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black, // Changed to Black
-                            focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
-                            disabledTextColor = Color.LightGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
-                            focusedBorderColor = Color.Black // Changed to Black
+                            unfocusedTextColor = Color.Black,
+                            focusedTextColor = Color.Black,
+                            cursorColor = Color.Black,
+                            focusedBorderColor = Color.Black
                         )
                     )
-                    Spacer(Modifier.height(6.dp))
 
                     var cost: Double = 0.0
                     var quantity = 0
@@ -324,13 +272,9 @@ fun CreateOrder(
                             quantity = productQuantity.toIntOrNull() ?: 0
                             totalAmount = (cost * quantity).toString()
                         },
-                        label = { Text("Single Product cost", color = Color.DarkGray) },
+                        label = { Text("Single Product Cost", color = Color.DarkGray) },
                         leadingIcon = {
-                            Icon(
-                                Icons.Outlined.AttachMoney,
-                                contentDescription = "Customer Icon",
-                                tint = Color.Black
-                            )
+                            Icon(Icons.Outlined.AttachMoney, contentDescription = "Cost Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
@@ -339,18 +283,11 @@ fun CreateOrder(
                             unfocusedTextColor = Color.Black,
                             focusedTextColor = Color.Black,
                             cursorColor = Color.Black,
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black,
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0),
-                            disabledTextColor = Color.LightGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0),
                             focusedBorderColor = Color.Black
                         )
                     )
-                    Spacer(Modifier.height(6.dp))
 
+                    // Product Quantity
                     OutlinedTextField(
                         value = productQuantity,
                         onValueChange = {
@@ -362,11 +299,7 @@ fun CreateOrder(
                         },
                         label = { Text("Product Quantity", color = Color.DarkGray) },
                         leadingIcon = {
-                            Icon(
-                                Icons.Rounded.ProductionQuantityLimits,
-                                contentDescription = "Customer Icon",
-                                tint = Color.Black
-                            )
+                            Icon(Icons.Rounded.ProductionQuantityLimits, contentDescription = "Quantity Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
@@ -375,48 +308,22 @@ fun CreateOrder(
                             unfocusedTextColor = Color.Black,
                             focusedTextColor = Color.Black,
                             cursorColor = Color.Black,
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black,
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0),
-                            disabledTextColor = Color.LightGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0),
                             focusedBorderColor = Color.Black
                         )
                     )
-                    Spacer(Modifier.height(6.dp))
 
+                    // Total Amount (Read-only)
                     OutlinedTextField(
                         value = totalAmount,
                         onValueChange = {}, // No-op since it's uneditable
-                        label = { Text("Total amount", color = Color.DarkGray) },
+                        label = { Text("Total Amount", color = Color.DarkGray) },
                         leadingIcon = {
-                            Icon(
-                                Icons.Rounded.Money,
-                                contentDescription = "Customer Icon",
-                                tint = Color.Black
-                            )
+                            Icon(Icons.Rounded.Money, contentDescription = "Total Amount Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-                        colors = TextFieldDefaults.outlinedTextFieldColors(
-                            unfocusedTextColor = Color.Black,
-                            focusedTextColor = Color.Black,
-                            cursorColor = Color.Black,
-                            disabledLeadingIconColor = Color.Gray,
-                            focusedLeadingIconColor = Color.Black,
-                            focusedPlaceholderColor = Color.Black,
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0),
-                            disabledTextColor = Color.DarkGray,
-                            errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color.Gray,
-                            focusedBorderColor = Color.Black
-                        ),
                         enabled = false // Make the total amount field uneditable
                     )
-                    Spacer(modifier = Modifier.height(40.dp))
 
                     // Create Order Button
                     Button(
@@ -456,9 +363,9 @@ fun CreateOrder(
 
                                     orderViewModel.saveData(
                                         seller = sellerName,
-//                                        sellerPhone = sellerPhone,
+                                        sellerPhone = sellerPhone,
                                         customer = customerName,
-//                                        customerPhone = customerPhone,
+                                        customerPhone = customerPhone,
                                         productName = productName,
                                         productCost = productCost,
                                         productQuantity = productQuantity,
@@ -473,6 +380,25 @@ fun CreateOrder(
                                         "Order created successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
+
+                                    // Add notification for the seller
+                                    notificationViewModel.addNotification(
+                                        sellerPhone,
+                                        NotificationModel(
+                                            notificationName = "Order Created",
+                                            notificationDescription = "Your order for $productName has been created."
+                                        )
+                                    )
+
+                                    // Add notification for the customer
+                                    notificationViewModel.addNotification(
+                                        customerPhone,
+                                        NotificationModel(
+                                            notificationName = "Order Confirmation",
+                                            notificationDescription = "Thank you for your order of $productName."
+                                        )
+                                    )
+
                                     showDialog = true
                                 }
                             }
@@ -496,12 +422,13 @@ fun CreateOrder(
                             )
                             Icon(
                                 Icons.Rounded.AddBox,
-                                contentDescription = "Arrow Icon",
+                                contentDescription = "Create Order Icon",
                                 tint = Color.White
                             )
                         }
                     }
                 }
+
             }
         }
     }
@@ -568,29 +495,45 @@ fun CreatedOrder(
 @Composable
 fun ShowOrder(orderDetails: OrderModel) {
     val ShowOrderItems = listOf(
+                ShowOrderData("Order Id: ${orderDetails.orderKey}"),
                 ShowOrderData("Seller: ${orderDetails.seller}"),
+                ShowOrderData("Seller Phone: ${orderDetails.sellerPhone}"),
                 ShowOrderData("Customer: ${orderDetails.customer}"),
+                ShowOrderData("Customer Phone: ${orderDetails.customerPhone}"),
                 ShowOrderData("Product Name: ${orderDetails.productName}"),
                 ShowOrderData("Product Cost: ${orderDetails.productCost}"),
                 ShowOrderData("Product Quantity: ${orderDetails.productQuantity}"),
                 ShowOrderData("Total Amount: ${orderDetails.totalAmount}")
     )
 
-    Box {
-        Column(Modifier.padding(4.dp)) {
-
-            ShowOrderItems.forEach {items ->
+    Box(
+        modifier = Modifier
+            .padding(vertical = 8.dp, horizontal = 1.dp)
+            .background(Color.White, shape = RoundedCornerShape(8.dp))
+    ) {
+        Column(
+            modifier = Modifier.padding( vertical = 16.dp, horizontal = 2.dp), // Padding inside the Box
+            verticalArrangement = Arrangement.spacedBy(8.dp) // Space between items
+        ) {
+            ShowOrderItems.forEach { item ->
                 Text(
-                    text = items.text,
+                    text = item.text,
                     color = Color.Black,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFontFamily,
-                    modifier = Modifier.padding(1.dp)
+                    modifier = Modifier
+                        .padding(4.dp) // Padding around each text item
+                        .background(
+                            Color(0xFFEFEFEF),
+                            shape = RoundedCornerShape(4.dp)
+                        ) // Background for each item
+                        .padding(4.dp) // Padding inside each item
                 )
             }
         }
     }
+
 }
 
 data class ShowOrderData(

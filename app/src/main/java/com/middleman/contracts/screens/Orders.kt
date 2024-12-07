@@ -426,30 +426,47 @@ fun DetailedOrderItem(
                     modifier = Modifier.padding(horizontal = 16.dp),
                     color = Color.DarkGray
                 )
-                Text(
-                    text = "Cost per unit: $productCost",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-                Text(
-                    text = "Product Quantity: $productQuantity",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
-                Text(
-                    text = "Payment Amount: $totalAmount",
-                    fontFamily = poppinsFontFamily,
-                    fontSize = 12.sp,
-                    fontWeight = FontWeight.Normal,
-                    modifier = Modifier.padding(horizontal = 16.dp),
-                    color = Color.Gray
-                )
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Column {
+                        Text(
+                            text = "Cost per unit: $productCost",
+                            fontFamily = poppinsFontFamily,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = "Product Quantity: $productQuantity",
+                            fontFamily = poppinsFontFamily,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = Color.Gray
+                        )
+                        Text(
+                            text = "Payment Amount: $totalAmount",
+                            fontFamily = poppinsFontFamily,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = Color.Gray
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier.height(35.dp),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
+                        onClick = {
+                            navController.navigate("${Routes.OrderDetails.routes}/$orderKey")
+                        }
+                    ) {
+                        Text("Pay", fontFamily = poppinsFontFamily, color = Color.White)
+                    }
+                }
 
                 HorizontalDivider(
                     modifier = Modifier.padding(horizontal = 20.dp, vertical = 7.dp),

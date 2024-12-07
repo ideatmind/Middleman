@@ -10,12 +10,14 @@ object SharedPref {
                   password: String,
                   otp : String,
 //                  imageUri: String,
+                  phone: String,
                   context: Context,
                   uid: String
     ) {
         val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
         val editor = sharedPreferences.edit()
         editor.putString("email", email)
+        editor.putString("phone", phone)
         editor.putString("password", password)
         editor.putString("username", userName)
         editor.putString("otp", otp)
@@ -30,6 +32,11 @@ object SharedPref {
     fun getEmail(context: Context) : String {
         val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
         return sharedPreferences.getString("email","")!!
+    }
+
+    fun getPhone(context: Context) : String {
+        val sharedPreferences = context.getSharedPreferences("users", MODE_PRIVATE)
+        return sharedPreferences.getString("phone","")!!
     }
 
 

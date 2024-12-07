@@ -33,6 +33,8 @@ class AddOrderViewModel: ViewModel() {
     fun saveData(
         seller: String,
         sellerEmail: String,
+        sellerPhone: String,
+        customerPhone: String,
         customer: String,
         customerEmail: String,
         productName: String,
@@ -46,9 +48,11 @@ class AddOrderViewModel: ViewModel() {
         val orderData = OrderModel(
             seller = seller,
             sellerEmail = sellerEmail,
+            sellerPhone = sellerPhone,
             customer = customer,
             orderKey = orderKey, // Use the generated orderKey here
             customerEmail = customerEmail,
+            customerPhone = customerPhone,
             productName = productName,
             productCost = productCost,
             productQuantity = productQuantity,

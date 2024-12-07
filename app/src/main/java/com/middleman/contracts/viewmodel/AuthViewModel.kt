@@ -1,6 +1,7 @@
 package com.middleman.contracts.viewmodel
 
 import android.content.Context
+import android.service.autofill.UserData
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -54,8 +55,8 @@ class AuthViewModel: ViewModel() {
                         password = userData.password,
                         otp = userData.otp,
                         context = context,
-                        uid = uid
-                    )
+                        uid = uid,
+                        phone = userData.phoneNo               )
                 }
             }
 
@@ -69,6 +70,7 @@ class AuthViewModel: ViewModel() {
         email: String,
         password: String,
         otp: String,
+        phoneNo: String,
         userName: String,
         context: Context
     ) {
@@ -82,7 +84,8 @@ class AuthViewModel: ViewModel() {
                         userName = userName,
                         otp = otp,
                         uid = it1.uid,
-                        context = context
+                        context = context,
+                        phoneNo = phoneNo
                     ) }
                 }else {
                     _error.postValue("Something went wrong")
@@ -95,11 +98,12 @@ class AuthViewModel: ViewModel() {
         email: String,
         password: String,
         userName: String,
+        phoneNo: String,
         otp: String,
         uid: String,
         context: Context
     ) {
-        val userData = UserModel(email = email, password = password, userName = userName, otp = otp, uid = uid)
+        val userData = UserModel(email = email, password = password, userName = userName, otp = otp, uid = uid, phoneNo = phoneNo)
 
         userRef.child(uid).setValue(userData)
             .addOnSuccessListener {
@@ -109,7 +113,8 @@ class AuthViewModel: ViewModel() {
                     password = password,
                     otp = otp,
                     context = context,
-                    uid = uid
+                    uid = uid,
+                    phone = phoneNo
                 )
             }.addOnFailureListener{
 
