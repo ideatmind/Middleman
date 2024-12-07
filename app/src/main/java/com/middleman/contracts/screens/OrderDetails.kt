@@ -86,7 +86,7 @@ fun OrderDetails(
                             modifier = Modifier
                                 .size(25.dp)
                                 .clickable {
-//                                    navController.navigate(Routes.BottomNav.routes)
+                                    navController.navigate(Routes.BottomNav.routes)
                                 }
                         )
                     }
