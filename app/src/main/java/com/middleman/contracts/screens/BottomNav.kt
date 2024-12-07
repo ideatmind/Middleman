@@ -16,6 +16,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -28,6 +29,7 @@ import androidx.navigation.compose.rememberNavController
 import com.middleman.contracts.R
 import com.middleman.contracts.model.BottomNavigation
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @Composable
@@ -39,13 +41,17 @@ fun BottomNav(navController: NavHostController) {
     ) { innerPadding ->
         NavHost(navController = navController1, startDestination = Routes.Home.routes,
             modifier = Modifier.padding(innerPadding)) {
+
             composable(Routes.Orders.routes) {
+                val context = LocalContext.current
                 val orderViewModel: CreatedOrdersViewModel = viewModel()
                 val userId = orderViewModel.getCurrentUserId()
                 if (userId != null) {
                     Orders(
                         orderViewModel, userId,
-                        navController = navController
+                        navController = navController,
+                        sellerEmail = SharedPref.getEmail(context),
+                        customerEmail = SharedPref.getEmail(context)
                     )
                 }
             }

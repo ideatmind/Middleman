@@ -20,9 +20,11 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
+import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.AttachMoney
+import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.Person
 import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.rounded.AddBox
@@ -61,6 +63,7 @@ import com.middleman.contracts.model.OrderModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
+import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.AddOrderViewModel
 import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
@@ -85,16 +88,18 @@ fun CreateOrder(
     val orderViewModel: AddOrderViewModel = viewModel()
     val isPosted by orderViewModel.isPosted.observeAsState(false)
 
-    var sellerName by remember { mutableStateOf("") }
-    var sellerPhone by remember { mutableStateOf("") }
+    val sellerName by remember { mutableStateOf(SharedPref.getUserName(context)) }
+//    var sellerPhone by remember { mutableStateOf("") }
     var customerName by remember { mutableStateOf("") }
-    var customerPhone by remember { mutableStateOf("") }
+//    var customerPhone by remember { mutableStateOf("") }
     var productName by remember { mutableStateOf("") }
     var productQuantity by remember { mutableStateOf("") }
     var productCost by remember { mutableStateOf("") }
     var totalAmount by remember { mutableStateOf("") }
     var showDialog by remember { mutableStateOf(false) } // State to control dialog visibility
     var orderId by remember { mutableStateOf("") } // State to hold the order ID
+    val sellerEmail by remember { mutableStateOf(SharedPref.getEmail(context)) }
+    var customerEmail by remember { mutableStateOf("") }
 
     val permissionLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
@@ -102,9 +107,7 @@ fun CreateOrder(
 
     LaunchedEffect(isPosted) {
         if (isPosted) {
-            sellerName = ""
-            sellerPhone = ""
-            customerPhone = ""
+            customerEmail = ""
             customerName = ""
             productName = ""
             productQuantity = ""
@@ -161,8 +164,8 @@ fun CreateOrder(
                 Column {
                     OutlinedTextField(
                         value = sellerName,
-                        onValueChange = { sellerName = it },
-                        label = { Text("Seller name", color = Color.DarkGray) }, // Changed to Black
+                        onValueChange = {},
+                        label = { Text("Your (Seller) name", color = Color.DarkGray) }, // Changed to Black
                         leadingIcon = {
                             Icon(
                                 Icons.Filled.Person,
@@ -179,22 +182,23 @@ fun CreateOrder(
                             disabledLeadingIconColor = Color.Gray,
                             focusedLeadingIconColor = Color.Black, // Changed to Black
                             focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
-                            disabledTextColor = Color.LightGray,
+                            unfocusedPlaceholderColor = Color.Black, // Keeping this as is
+                            disabledTextColor = Color.Black,
                             errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
+                            unfocusedLeadingIconColor = Color.Gray, // Keeping this as is
                             focusedBorderColor = Color.Black // Changed to Black
-                        )
+                        ),
+                        enabled = false
                     )
                     Spacer(Modifier.height(6.dp))
 
                     OutlinedTextField(
-                        value = sellerPhone,
-                        onValueChange = { sellerPhone = it },
-                        label = { Text("Seller Phone no.", color = Color.DarkGray) }, // Changed to Black
+                        value = sellerEmail,
+                        onValueChange = { },
+                        label = { Text("Your (Seller) Email", color = Color.DarkGray) }, // Changed to Black
                         leadingIcon = {
                             Icon(
-                                Icons.Filled.Phone,
+                                Icons.Filled.Email,
                                 contentDescription = "",
                                 tint = Color.Black // Changed to Black
                             )
@@ -209,12 +213,13 @@ fun CreateOrder(
                             disabledLeadingIconColor = Color.Gray,
                             focusedLeadingIconColor = Color.Black, // Changed to Black
                             focusedPlaceholderColor = Color.Black, // Changed to Black
-                            unfocusedPlaceholderColor = Color(0xFFB0B0B0), // Keeping this as is
-                            disabledTextColor = Color.LightGray,
+                            unfocusedPlaceholderColor = Color.Black, // Keeping this as is
+                            disabledTextColor = Color.Black,
                             errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0), // Keeping this as is
+                            unfocusedLeadingIconColor = Color.Gray, // Keeping this as is
                             focusedBorderColor = Color.Black // Changed to Black
-                        )
+                        ),
+                        enabled = false
                     )
                     Spacer(Modifier.height(6.dp))
 
@@ -253,19 +258,18 @@ fun CreateOrder(
                     Spacer(Modifier.height(6.dp))
 
                     OutlinedTextField(
-                        value = customerPhone,
-                        onValueChange = { customerPhone = it },
-                        label = { Text("Buyer Phone no.", color = Color.DarkGray) }, // Changed to Black
+                        value = customerEmail,
+                        onValueChange = { customerEmail = it },
+                        label = { Text("Customer Email Id", color = Color.DarkGray) }, // Changed to Black
                         leadingIcon = {
                             Icon(
-                                Icons.Outlined.Phone,
+                                Icons.Outlined.Email,
                                 contentDescription = "",
                                 tint = Color.Black // Changed to Black
                             )
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedTextColor = Color.Black, // Changed to Black
                             focusedTextColor = Color.Black, // Changed to Black
@@ -406,7 +410,7 @@ fun CreateOrder(
                             unfocusedPlaceholderColor = Color(0xFFB0B0B0),
                             disabledTextColor = Color.DarkGray,
                             errorTextColor = Color.Red,
-                            unfocusedLeadingIconColor = Color(0xFFB0B0B0),
+                            unfocusedLeadingIconColor = Color.Gray,
                             focusedBorderColor = Color.Black
                         ),
                         enabled = false // Make the total amount field uneditable
@@ -448,24 +452,28 @@ fun CreateOrder(
                                 ).show()
 
                                 else -> {
+                                    // Set the orderId and show the dialog
+                                    orderId = orderViewModel.orderKey.value ?: ""
+
                                     orderViewModel.saveData(
                                         seller = sellerName,
-                                        sellerPhone = sellerPhone,
+//                                        sellerPhone = sellerPhone,
                                         customer = customerName,
-                                        customerPhone = customerPhone,
+//                                        customerPhone = customerPhone,
                                         productName = productName,
                                         productCost = productCost,
                                         productQuantity = productQuantity,
                                         totalAmount = totalAmount,
-                                        userId = FirebaseAuth.getInstance().currentUser!!.uid
+                                        orderId = orderId,
+                                        userId = FirebaseAuth.getInstance().currentUser!!.uid,
+                                        sellerEmail = sellerEmail,
+                                        customerEmail = customerEmail,
                                     )
                                     Toast.makeText(
                                         context,
                                         "Order created successfully",
                                         Toast.LENGTH_SHORT
                                     ).show()
-                                    // Set the orderId and show the dialog
-                                    orderId = orderViewModel.orderKey.value ?: ""
                                     showDialog = true
                                 }
                             }
@@ -523,7 +531,7 @@ fun CreatedOrder(
         },
         title = {
             Text(
-                text = "Your Order",
+                text = "Your Created Order",
                 color = Color.Black,
                 fontSize = 20.sp,
                 fontWeight = FontWeight.SemiBold,
@@ -557,7 +565,7 @@ fun CreatedOrder(
 
 @Composable
 fun ShowOrder(orderDetails: OrderModel) {
-    var ShowOrderItems = listOf(
+    val ShowOrderItems = listOf(
                 ShowOrderData("Seller: ${orderDetails.seller}"),
                 ShowOrderData("Customer: ${orderDetails.customer}"),
                 ShowOrderData("Product Name: ${orderDetails.productName}"),

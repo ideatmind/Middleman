@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
-import androidx.compose.material.icons.rounded.AddTask
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Password
@@ -34,6 +33,7 @@ import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,6 +43,9 @@ import androidx.navigation.NavHostController
 import com.middleman.contracts.R
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
+import com.middleman.contracts.ui.theme.ubuntuFontFamily
+import com.middleman.contracts.utils.ProfilePref
+import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -52,6 +55,10 @@ fun Profile(navController : NavHostController) {
     val authViewModel: AuthViewModel = viewModel()
     val firebaseUser by authViewModel.firebaseUser.observeAsState(null)
 
+    val context = LocalContext.current
+    val userName = SharedPref.getUserName(context)
+    val email = SharedPref.getEmail(context)
+
     LaunchedEffect(firebaseUser) {
         if(firebaseUser == null) {
             navController.navigate(Routes.Login.routes) {
@@ -60,8 +67,6 @@ fun Profile(navController : NavHostController) {
             }
         }
     }
-
-    Column {
 
         Scaffold(
             topBar = {
@@ -73,9 +78,11 @@ fun Profile(navController : NavHostController) {
                             Icon(
                                 imageVector = Icons.Rounded.ArrowBackIosNew,
                                 contentDescription = "back navigation",
-                                modifier = Modifier.size(25.dp).clickable {
-                                    navController.navigate(Routes.BottomNav.routes)
-                                }
+                                modifier = Modifier
+                                    .size(25.dp)
+                                    .clickable {
+                                        navController.navigate(Routes.BottomNav.routes)
+                                    }
                             )
                         }
                     },
@@ -96,19 +103,22 @@ fun Profile(navController : NavHostController) {
                         Box(
                             modifier = Modifier.padding(horizontal = 8.dp)
                         ) {
-                            Icon(
-                                imageVector = Icons.Rounded.AddTask,
-                                contentDescription = "Create Order",
-                                modifier = Modifier.size(25.dp)
-                                    .clickable {
-                                        navController.navigate(Routes.CreateOrder.routes)
-                                    }
+                            Text(
+                                modifier = Modifier.clickable {
+
+
+                                },
+                                text = "Edit",
+                                fontFamily = ubuntuFontFamily,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.ExtraBold,
+                                color = Color.Black
                             )
                         }
                     }
                 )
             }
-        ) {paddingValues ->
+        ) { paddingValues ->
             Column(
                 Modifier
                     .fillMaxSize()
@@ -120,7 +130,9 @@ fun Profile(navController : NavHostController) {
                 Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
@@ -128,16 +140,16 @@ fun Profile(navController : NavHostController) {
                             contentDescription = "name"
                         )
                         Text(
-                            "Ganesh Jadhavar",
-                            fontFamily = poppinsFontFamily,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
+                            text = userName,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color.DarkGray
+                            color = Color.Black
                         )
                     }
 
-                    HorizontalDivider(
+                    HorizontalDivider (
                         modifier = Modifier.padding(horizontal = 35.dp, vertical = 10.dp),
                         thickness = 1.dp,
                         color = Color.Gray
@@ -145,7 +157,9 @@ fun Profile(navController : NavHostController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
@@ -153,12 +167,12 @@ fun Profile(navController : NavHostController) {
                             contentDescription = "email"
                         )
                         Text(
-                            "Email",
-                            fontFamily = poppinsFontFamily,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Normal,
+                            text = email,
+                            fontFamily = ubuntuFontFamily,
+                            fontSize = 17.sp,
+                            fontWeight = FontWeight.SemiBold,
                             modifier = Modifier.padding(horizontal = 16.dp),
-                            color = Color.DarkGray
+                            color = Color.Black
                         )
                     }
 
@@ -170,7 +184,9 @@ fun Profile(navController : NavHostController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
@@ -195,7 +211,9 @@ fun Profile(navController : NavHostController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
@@ -220,7 +238,9 @@ fun Profile(navController : NavHostController) {
 
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth().padding(horizontal = 18.dp, vertical = 8.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
                         horizontalArrangement = Arrangement.Start
                     ) {
                         Icon(
@@ -262,5 +282,4 @@ fun Profile(navController : NavHostController) {
                 }
             }
         }
-    }
 }

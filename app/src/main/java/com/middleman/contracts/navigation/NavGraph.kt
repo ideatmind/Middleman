@@ -3,6 +3,7 @@ package com.middleman.contracts.navigation
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -13,10 +14,13 @@ import com.middleman.contracts.screens.ForgotPasswordScreen
 import com.middleman.contracts.screens.HomeScreen
 import com.middleman.contracts.screens.LoginScreen
 import com.middleman.contracts.screens.Notifications
+import com.middleman.contracts.screens.OrderDetails
 import com.middleman.contracts.screens.Orders
 import com.middleman.contracts.screens.Profile
 import com.middleman.contracts.screens.RegisterScreen
 import com.middleman.contracts.screens.Transactions
+import com.middleman.contracts.utils.SharedPref
+import com.middleman.contracts.viewmodel.AddOrderViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
 @RequiresApi(Build.VERSION_CODES.TIRAMISU)
@@ -56,19 +60,30 @@ fun NavGraph(
             ForgotPasswordScreen(navController)
         }
 
+        composable(Routes.OrderDetails.routes) {
+            val viewModel: CreatedOrdersViewModel = viewModel()
+            val orderViewModel: AddOrderViewModel = viewModel()
+            val orderId = orderViewModel.orderKey.value ?: ""
+            OrderDetails(
+                viewModel = viewModel,
+                orderKey = orderId,
+                navController = navController
+            )
+        }
+
         composable(Routes.Orders.routes) {
+            val context = LocalContext.current
             val orderViewModel: CreatedOrdersViewModel = viewModel()
             val userId = orderViewModel.getCurrentUserId()
             if (userId != null) {
                 Orders(
                     orderViewModel, userId,
-                    navController = navController
+                    navController = navController,
+                    sellerEmail = SharedPref.getEmail(context),
+                    customerEmail = SharedPref.getEmail(context)
                 )
             }
         }
-//        composable(Routes.CreatedOrder.routes) { backStackEntry ->
-//            val orderId = backStackEntry.arguments?.getString("orderId") ?: ""
-//            CreatedOrder(navController, orderId) // Pass the orderId to CreatedOrder
-//        }
+
     }
 }

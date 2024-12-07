@@ -32,9 +32,12 @@ class AddOrderViewModel: ViewModel() {
 
     fun saveData(
         seller: String,
-        sellerPhone: String,
+//        sellerPhone: String,
+        sellerEmail: String,
         customer: String,
-        customerPhone: String,
+        customerEmail: String,
+//        customerPhone: String,
+        orderId: String,
         productName: String,
         productCost: String,
         productQuantity: String,
@@ -42,16 +45,17 @@ class AddOrderViewModel: ViewModel() {
         userId: String,
     ) {
         val orderData = OrderModel(
-            seller,
-            sellerPhone,
-            customer,
-            customerPhone,
-            productName,
-            productCost,
-            productQuantity,
-            totalAmount,
-            userId,
-            System.currentTimeMillis().toString()
+            seller = seller,
+            sellerEmail = sellerEmail,
+            customer = customer,
+            orderKey = orderId,
+            customerEmail = customerEmail,
+            productName = productName,
+            productCost = productCost,
+            productQuantity = productQuantity,
+            totalAmount = totalAmount,
+            userId = userId,
+            timeStamp =  System.currentTimeMillis().toString()
         )
 
         val orderKey = userRef.push().key ?: return // Get the key for the new order

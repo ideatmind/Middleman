@@ -117,6 +117,68 @@ class CreatedOrdersViewModel: ViewModel() {
 
 
 
+    fun fetchOrdersByCustomerEmailId(customerEmailId: String, onResult: (List<OrderModel>) -> Unit) {
+        db.getReference("orders").orderByChild("customerEmail").equalTo(customerEmailId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val orders = mutableListOf<OrderModel>()
+                    for (orderSnapshot in snapshot.children) {
+                        val order = orderSnapshot.getValue(OrderModel::class.java)
+                        order?.let { orders.add(it) }
+                    }
+                    onResult(orders)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("CreatedOrdersViewModel", "Error fetching orders: ${error.message}")
+                    onResult(emptyList())
+                }
+            })
+    }
+
+
+    fun fetchOrdersBySellerEmailId(sellerEmailId: String, onResult: (List<OrderModel>) -> Unit) {
+        db.getReference("orders").orderByChild("sellerEmail").equalTo(sellerEmailId)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val orders = mutableListOf<OrderModel>()
+                    for (orderSnapshot in snapshot.children) {
+                        val order = orderSnapshot.getValue(OrderModel::class.java)
+                        order?.let { orders.add(it) }
+                    }
+                    onResult(orders)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("CreatedOrdersViewModel", "Error fetching orders: ${error.message}")
+                    onResult(emptyList())
+                }
+            })
+    }
+
+
+
+    fun fetchOrdersByOrderId(orderKey: String, onResult: (List<OrderModel>) -> Unit) {
+        db.getReference("orders").equalTo(orderKey)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val orders = mutableListOf<OrderModel>()
+                    for (orderSnapshot in snapshot.children) {
+                        val order = orderSnapshot.getValue(OrderModel::class.java)
+                        order?.let { orders.add(it) }
+                    }
+                    onResult(orders)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.e("CreatedOrdersViewModel", "Error fetching orders: ${error.message}")
+                    onResult(emptyList())
+                }
+            })
+    }
+
+
+
 
 }
 
