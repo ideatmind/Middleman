@@ -508,7 +508,7 @@ fun CreateOrder(
 
     // Show the CreatedOrder dialog if showDialog is true
     if (showDialog) {
-        CreatedOrder(orderId = orderId) {
+        CreatedOrder(orderId = orderId, navController = navController) {
             showDialog = false // Close the dialog when "Ok" is clicked
         }
     }
@@ -517,14 +517,12 @@ fun CreateOrder(
 @Composable
 fun CreatedOrder(
     orderId: String,
+    navController: NavHostController,
     onDismiss: () -> Unit,
 ) {
-    // State to control the visibility of the dialog
     val createdOrdersViewModel: CreatedOrdersViewModel = viewModel()
     val orderDetails by createdOrdersViewModel.getOrderById(orderId).observeAsState(null)
-    val navController = rememberNavController()
 
-    // AlertDialog to display order details
     AlertDialog(
         onDismissRequest = {
             onDismiss() // Close the dialog when dismissed
