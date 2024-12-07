@@ -14,9 +14,11 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Notifications
+import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -30,6 +32,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,20 +54,35 @@ import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
+import com.middleman.contracts.utils.NotificationSharedPref
+import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
+import com.middleman.contracts.viewmodel.NotificationViewModel
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(navController: NavHostController) {
+fun HomeScreen(navController: NavHostController, notificationViewModel: NotificationViewModel = viewModel()) {
     // State variable to control the dialog visibility
     var showDialog by remember { mutableStateOf(false) }
+    var hasNewNotifications by remember { mutableStateOf(false) } // Track new notifications
+    val context = LocalContext.current
+    val userPhone = SharedPref.getPhone(LocalContext.current)
 
     // Handle back button press
     val activity = LocalContext.current as? Activity
     BackHandler {
         // Show the confirmation dialog when back is pressed
         showDialog = true
+    }
+
+    // Fetch notifications and determine if there are new ones
+    LaunchedEffect(Unit) {
+        notificationViewModel.fetchNotifications(userPhone) { notifications ->
+            // Logic to determine if there are new notifications
+            val lastSeenTimestamp = NotificationSharedPref.getLastSeenTimestamp(context)
+            hasNewNotifications = notifications.any { it.timestamp > lastSeenTimestamp }
+        }
     }
 
     // AlertDialog for confirmation
@@ -110,15 +128,25 @@ fun HomeScreen(navController: NavHostController) {
                     )
                 },
                 actions = {
-                    Icon(
-                        imageVector = Icons.Outlined.Notifications,
-                        contentDescription = "Notifications",
-                        modifier = Modifier
-                            .size(35.dp)
-                            .padding(end = 10.dp).clickable {
+                    Box(
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Icon(
+                            imageVector = Icons.Rounded.NotificationsNone,
+                            contentDescription = "notification",
+                            modifier = Modifier.clickable {
                                 navController.navigate(Routes.Notifications.routes)
                             }
-                    )
+                        )
+                        if (hasNewNotifications) {
+                            Box(
+                                modifier = Modifier
+                                    .size(8.dp)
+                                    .background(Color.Red, shape = CircleShape)
+                                    .align(Alignment.TopEnd)
+                            )
+                        }
+                    }
                 }
             )
         }

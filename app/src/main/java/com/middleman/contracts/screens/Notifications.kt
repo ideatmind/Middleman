@@ -1,5 +1,6 @@
 package com.middleman.contracts.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddTask
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
@@ -24,8 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,23 +40,27 @@ import androidx.navigation.NavHostController
 import com.middleman.contracts.model.NotificationModel
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
+import com.middleman.contracts.utils.NotificationSharedPref
 import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.NotificationViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Notifications(navController: NavHostController, notificationViewModel: NotificationViewModel = viewModel()) {
-    val userPhone = SharedPref.getPhone(LocalContext.current) // Get the current user's email
+    val userPhone = SharedPref.getPhone(LocalContext.current)
     val notifications = remember { mutableStateListOf<NotificationModel>() }
+    val lastSeenTimestamp = NotificationSharedPref.getLastSeenTimestamp(LocalContext.current)
+    val context = LocalContext.current
 
     LaunchedEffect(userPhone) {
         notificationViewModel.fetchNotifications(userPhone) { fetchedNotifications ->
             notifications.clear()
             notifications.addAll(fetchedNotifications)
+            NotificationSharedPref.setLastSeenTimestamp(context, System.currentTimeMillis())
         }
     }
-    Column {
 
+    Column {
         Scaffold(
             topBar = {
                 TopAppBar(
@@ -102,7 +106,7 @@ fun Notifications(navController: NavHostController, notificationViewModel: Notif
                     }
                 )
             }
-        ) {paddingValues ->
+        ) { paddingValues ->
 
             Column(
                 Modifier
@@ -112,20 +116,22 @@ fun Notifications(navController: NavHostController, notificationViewModel: Notif
                 (notifications.reversed()).forEach { item ->
                     NotificationItem(
                         notificationName = item.notificationName,
-                        notificationDescription = item.notificationDescription
+                        notificationDescription = item.notificationDescription,
+                        hasNewNotification = item.timestamp > lastSeenTimestamp
                     )
                 }
 
                 Spacer(Modifier.height(25.dp))
             }
-    }
+        }
     }
 }
 
 @Composable
 fun NotificationItem(
     notificationName: String,
-    notificationDescription: String
+    notificationDescription: String,
+    hasNewNotification: Boolean,
 ) {
     Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.Start) {
 
@@ -133,13 +139,26 @@ fun NotificationItem(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 18.dp, vertical = 8.dp),
+                .padding(horizontal = 18.dp, vertical = 8.dp)
+                .clickable {
+
+                }, // Handle click
             horizontalArrangement = Arrangement.Start
         ) {
-            Icon(
-                imageVector = Icons.Rounded.NotificationsNone,
-                contentDescription = "notification"
-            )
+            Box {
+                Icon(
+                    imageVector = Icons.Rounded.NotificationsNone,
+                    contentDescription = "notification"
+                )
+                if (hasNewNotification) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(Color.Red, shape = CircleShape)
+                            .align(Alignment.TopEnd)
+                    )
+                }
+            }
 
             Column {
                 Text(
@@ -161,7 +180,6 @@ fun NotificationItem(
             }
         }
 
-
         HorizontalDivider(
             modifier = Modifier.padding(horizontal = 35.dp, vertical = 10.dp),
             thickness = 1.dp,
@@ -169,3 +187,4 @@ fun NotificationItem(
         )
     }
 }
+

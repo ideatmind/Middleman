@@ -8,5 +8,6 @@ data class NotificationModel(
     val customerEmail: String = "",
     val type: String = "General",
     val orderId: String? = null,
-    val isRead: Boolean = false
+    val isRead: Boolean = false,
+    val timeSeen: Long = 0L
 )

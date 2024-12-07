@@ -386,7 +386,8 @@ fun CreateOrder(
                                         sellerPhone,
                                         NotificationModel(
                                             notificationName = "Order Created",
-                                            notificationDescription = "Your order for $productName has been created."
+                                            notificationDescription = "Your order for $productName has been created.",
+                                            timeSeen =  System.currentTimeMillis()
                                         )
                                     )
 
@@ -395,7 +396,8 @@ fun CreateOrder(
                                         customerPhone,
                                         NotificationModel(
                                             notificationName = "Order Confirmation",
-                                            notificationDescription = "Thank you for your order of $productName."
+                                            notificationDescription = "Pay to confirm order for $productName",
+                                            timeSeen =  System.currentTimeMillis()
                                         )
                                     )
 
