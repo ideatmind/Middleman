@@ -9,5 +9,6 @@ data class NotificationModel(
     val type: String = "General",
     val orderId: String? = null,
     val isRead: Boolean = false,
-    val timeSeen: Long = 0L
+    val timeSeen: Long = 0L,
+    var hasNewNotification: Boolean = true
 )

@@ -151,7 +151,7 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
             )
         }
     ) { paddingValues ->
-        Column(Modifier.padding(paddingValues).padding(top = 0.dp)) {
+        Column(Modifier.padding(paddingValues).padding(0.dp)) {
 
             // wallet
                 Card(

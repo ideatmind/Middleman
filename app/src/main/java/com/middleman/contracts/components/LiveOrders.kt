@@ -53,7 +53,7 @@ fun LiveOrders(viewModel: CreatedOrdersViewModel, userId: String, navController:
 
     Card(
         modifier = Modifier
-            .height(900.dp)
+            .fillMaxSize()
             .padding(20.dp),
         shape = RoundedCornerShape(12.dp),
         colors = CardDefaults.cardColors(Color.White)
@@ -89,6 +89,7 @@ fun LiveOrders(viewModel: CreatedOrdersViewModel, userId: String, navController:
                         items(orders.reversed()) { order ->
                             OrderItem(
                                 sellerName = order.seller,
+                                customerName = order.customer,
                                 productName = order.productName,
                                 totalAmount = order.totalAmount,
                                 navHostController = navController
@@ -105,6 +106,7 @@ fun LiveOrders(viewModel: CreatedOrdersViewModel, userId: String, navController:
 @Composable
 fun OrderItem(
     sellerName: String,
+    customerName: String,
     productName: String,
     totalAmount: String,
     navHostController: NavHostController
@@ -136,6 +138,14 @@ fun OrderItem(
                 )
                 Text(
                     text = "Seller: $sellerName",
+                    fontFamily = poppinsFontFamily,
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Normal,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = Color.DarkGray
+                )
+                Text(
+                    text = "Customer: $customerName",
                     fontFamily = poppinsFontFamily,
                     fontSize = 15.sp,
                     fontWeight = FontWeight.Normal,

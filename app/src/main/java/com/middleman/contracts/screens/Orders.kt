@@ -397,19 +397,19 @@ fun DetailedOrderItem(
             )
 
             Column {
-                    Text(
-                        text = "Product: $productName",
-                        fontFamily = ubuntuFontFamily,
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.SemiBold,
-                        modifier = Modifier.padding(horizontal = 16.dp),
-                        color = Color.DarkGray
-                    )
-                    val timeAndDate = try {
-                        formatTimestamp(time.toLong())
-                    } catch (e: NumberFormatException) {
-                        "Invalid date"
-                    }
+                Text(
+                    text = "Product: $productName",
+                    fontFamily = ubuntuFontFamily,
+                    fontSize = 17.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    modifier = Modifier.padding(horizontal = 16.dp),
+                    color = Color.DarkGray
+                )
+                val timeAndDate = try {
+                    formatTimestamp(time.toLong())
+                } catch (e: NumberFormatException) {
+                    "Invalid date"
+                }
                 Text(
                     text = "Seller: $sellerName",
                     fontFamily = poppinsFontFamily,

@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Email
+import androidx.compose.material.icons.outlined.PhoneIphone
 import androidx.compose.material.icons.rounded.ArrowBackIosNew
 import androidx.compose.material.icons.rounded.MoneyOff
 import androidx.compose.material.icons.rounded.Password
@@ -58,6 +59,7 @@ fun Profile(navController : NavHostController) {
     val context = LocalContext.current
     val userName = SharedPref.getUserName(context)
     val email = SharedPref.getEmail(context)
+    val phone = SharedPref.getPhone(context)
 
     LaunchedEffect(firebaseUser) {
         if(firebaseUser == null) {
@@ -171,6 +173,34 @@ fun Profile(navController : NavHostController) {
                             fontFamily = ubuntuFontFamily,
                             fontSize = 17.sp,
                             fontWeight = FontWeight.SemiBold,
+                            modifier = Modifier.padding(horizontal = 16.dp),
+                            color = Color.Black
+                        )
+                    }
+
+
+                    HorizontalDivider (
+                        modifier = Modifier.padding(horizontal = 35.dp, vertical = 10.dp),
+                        thickness = 1.dp,
+                        color = Color.Gray
+                    )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 18.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.Start
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.PhoneIphone,
+                            contentDescription = "phone"
+                        )
+                        Text(
+                            text = phone,
+                            fontFamily = poppinsFontFamily,
+                            fontSize = 18.sp,
+                            fontWeight = FontWeight.Normal,
                             modifier = Modifier.padding(horizontal = 16.dp),
                             color = Color.Black
                         )

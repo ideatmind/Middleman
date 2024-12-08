@@ -192,6 +192,7 @@ fun CreateOrder(
                             leadingIcon = {
                                 Icon(Icons.Outlined.Person, contentDescription = "Customer Icon", tint = Color.Black)
                             },
+                            maxLines = 3,
                             modifier = Modifier
                                 .weight(1f)
                                 .padding(end = 8.dp), // Use weight for equal distribution
@@ -232,12 +233,15 @@ fun CreateOrder(
                     // Customer Email
                     OutlinedTextField(
                         value = customerEmail,
-                        onValueChange = { customerEmail = it },
+                        onValueChange = {
+                            customerEmail = it
+                        },
                         label = { Text("Customer Email Id", color = Color.DarkGray) },
                         leadingIcon = {
                             Icon(Icons.Outlined.Email, contentDescription = "Email Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedTextColor = Color.Black,
@@ -253,6 +257,7 @@ fun CreateOrder(
                         onValueChange = { productName = it },
                         label = { Text("Product Name", color = Color.DarkGray) },
                         modifier = Modifier.fillMaxWidth(),
+                        maxLines = 1,
                         shape = RoundedCornerShape(24.dp),
                         colors = TextFieldDefaults.outlinedTextFieldColors(
                             unfocusedTextColor = Color.Black,
@@ -272,6 +277,7 @@ fun CreateOrder(
                             quantity = productQuantity.toIntOrNull() ?: 0
                             totalAmount = (cost * quantity).toString()
                         },
+                        maxLines = 1,
                         label = { Text("Single Product Cost", color = Color.DarkGray) },
                         leadingIcon = {
                             Icon(Icons.Outlined.AttachMoney, contentDescription = "Cost Icon", tint = Color.Black)
@@ -297,6 +303,7 @@ fun CreateOrder(
                             quantity = productQuantity.toIntOrNull() ?: 0
                             totalAmount = (cost * quantity).toString()
                         },
+                        maxLines = 1,
                         label = { Text("Product Quantity", color = Color.DarkGray) },
                         leadingIcon = {
                             Icon(Icons.Rounded.ProductionQuantityLimits, contentDescription = "Quantity Icon", tint = Color.Black)
@@ -312,22 +319,25 @@ fun CreateOrder(
                         )
                     )
 
-                    // Total Amount (Read-only)
+
                     OutlinedTextField(
                         value = totalAmount,
-                        onValueChange = {}, // No-op since it's uneditable
+                        onValueChange = {},
                         label = { Text("Total Amount", color = Color.DarkGray) },
                         leadingIcon = {
                             Icon(Icons.Rounded.Money, contentDescription = "Total Amount Icon", tint = Color.Black)
                         },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(24.dp),
-                        enabled = false // Make the total amount field uneditable
+                        enabled = false
                     )
 
-                    // Create Order Button
+
+                    Spacer(Modifier.height(25.dp))
+
                     Button(
                         onClick = {
+
                             when {
                                 sellerName.isEmpty() -> Toast.makeText(
                                     context,
@@ -361,49 +371,58 @@ fun CreateOrder(
 
                                 else -> {
 
-                                    orderViewModel.saveData(
-                                        seller = sellerName,
-                                        sellerPhone = sellerPhone,
-                                        customer = customerName,
-                                        customerPhone = customerPhone,
-                                        productName = productName,
-                                        productCost = productCost,
-                                        productQuantity = productQuantity,
-                                        totalAmount = totalAmount,
+                                    if (customerEmail.isNotEmpty() && !customerEmail.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex())) {
+                                        Toast.makeText(
+                                            context,
+                                            "Invalid email format",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
+                                    } else {
+                                        orderViewModel.saveData(
+                                            seller = sellerName,
+                                            sellerPhone = sellerPhone,
+                                            customer = customerName,
+                                            customerPhone = customerPhone,
+                                            productName = productName,
+                                            productCost = productCost,
+                                            productQuantity = productQuantity,
+                                            totalAmount = totalAmount,
 //                                        orderKey = orderId,
-                                        userId = FirebaseAuth.getInstance().currentUser!!.uid,
-                                        sellerEmail = sellerEmail,
-                                        customerEmail = customerEmail,
-                                    )
-                                    Toast.makeText(
-                                        context,
-                                        "Order created successfully",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-
-                                    // Add notification for the seller
-                                    notificationViewModel.addNotification(
-                                        sellerPhone,
-                                        NotificationModel(
-                                            notificationName = "Order Created",
-                                            notificationDescription = "Your order for $productName has been created.",
-                                            timeSeen =  System.currentTimeMillis()
+                                            userId = FirebaseAuth.getInstance().currentUser!!.uid,
+                                            sellerEmail = sellerEmail,
+                                            customerEmail = customerEmail,
                                         )
-                                    )
+                                        Toast.makeText(
+                                            context,
+                                            "Order created successfully",
+                                            Toast.LENGTH_SHORT
+                                        ).show()
 
-                                    // Add notification for the customer
-                                    notificationViewModel.addNotification(
-                                        customerPhone,
-                                        NotificationModel(
-                                            notificationName = "Order Confirmation",
-                                            notificationDescription = "Pay to confirm order for $productName",
-                                            timeSeen =  System.currentTimeMillis()
+                                        // Add notification for the seller
+                                        notificationViewModel.addNotification(
+                                            sellerPhone,
+                                            NotificationModel(
+                                                notificationName = "Order Created",
+                                                notificationDescription = "Your order for $productName has been created.",
+                                                timeSeen =  System.currentTimeMillis()
+                                            )
                                         )
-                                    )
 
-                                    showDialog = true
+                                        // Add notification for the customer
+                                        notificationViewModel.addNotification(
+                                            customerPhone,
+                                            NotificationModel(
+                                                notificationName = "Order Confirmation",
+                                                notificationDescription = "Pay to confirm order for $productName",
+                                                timeSeen =  System.currentTimeMillis()
+                                            )
+                                        )
+
+                                        showDialog = true
+                                    }
                                 }
                             }
+
                         },
                         colors = ButtonDefaults.buttonColors(Color.Black),
                         modifier = Modifier
@@ -497,15 +516,15 @@ fun CreatedOrder(
 @Composable
 fun ShowOrder(orderDetails: OrderModel) {
     val ShowOrderItems = listOf(
-                ShowOrderData("Order Id: ${orderDetails.orderKey}"),
-                ShowOrderData("Seller: ${orderDetails.seller}"),
-                ShowOrderData("Seller Phone: ${orderDetails.sellerPhone}"),
-                ShowOrderData("Customer: ${orderDetails.customer}"),
-                ShowOrderData("Customer Phone: ${orderDetails.customerPhone}"),
-                ShowOrderData("Product Name: ${orderDetails.productName}"),
-                ShowOrderData("Product Cost: ${orderDetails.productCost}"),
-                ShowOrderData("Product Quantity: ${orderDetails.productQuantity}"),
-                ShowOrderData("Total Amount: ${orderDetails.totalAmount}")
+        ShowOrderData("Order Id: ${orderDetails.orderKey}"),
+        ShowOrderData("Seller: ${orderDetails.seller}"),
+        ShowOrderData("Seller Phone: ${orderDetails.sellerPhone}"),
+        ShowOrderData("Customer: ${orderDetails.customer}"),
+        ShowOrderData("Customer Phone: ${orderDetails.customerPhone}"),
+        ShowOrderData("Product Name: ${orderDetails.productName}"),
+        ShowOrderData("Product Cost: ${orderDetails.productCost}"),
+        ShowOrderData("Product Quantity: ${orderDetails.productQuantity}"),
+        ShowOrderData("Total Amount: ${orderDetails.totalAmount}")
     )
 
     Box(
@@ -541,4 +560,3 @@ fun ShowOrder(orderDetails: OrderModel) {
 data class ShowOrderData(
     var text: String
 )
-
