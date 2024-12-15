@@ -75,4 +75,15 @@ dependencies {
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.8.7")
     implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.5")
+
+
+    implementation ("com.razorpay:checkout:1.6.40")
+
+    implementation("io.ktor:ktor-server-core:2.2.4")
+    implementation("io.ktor:ktor-server-netty:2.2.4")
+    implementation("io.ktor:ktor-serialization:2.2.4")
+    implementation("io.ktor:ktor-server-content-negotiation:2.2.4")
+    implementation("io.ktor:ktor-server-cors:2.2.4")
+    implementation("com.squareup.okhttp3:okhttp:4.9.3")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.0")
 }

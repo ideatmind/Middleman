@@ -380,7 +380,7 @@ fun OrderDetailsItem(
                 color = Color.Gray
             )
 
-            Spacer(modifier = Modifier.height(28.dp)) // Add spacing before the button
+            Spacer(modifier = Modifier.height(90.dp)) // Add spacing before the button
 
             Box(
                 Modifier

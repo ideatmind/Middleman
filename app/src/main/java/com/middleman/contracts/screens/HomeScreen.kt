@@ -1,4 +1,3 @@
-
 package com.middleman.contracts.screens
 
 import android.annotation.SuppressLint
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material.icons.rounded.NotificationsNone
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
@@ -42,6 +40,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -52,6 +51,8 @@ import com.middleman.contracts.R
 import com.middleman.contracts.components.BlinkingDot
 import com.middleman.contracts.components.LiveOrders
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.ui.theme.CardColor
+import com.middleman.contracts.ui.theme.PrimaryColor
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.utils.NotificationSharedPref
@@ -95,15 +96,16 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
                 Button(onClick = {
                     showDialog = false
                 },
-                    colors = ButtonDefaults.buttonColors(Color.Black)) {
-                    Text("No", fontFamily = poppinsFontFamily)
+                    colors = ButtonDefaults.buttonColors(Color.Black) // Primary color for button
+                ) {
+                    Text("No", fontFamily = poppinsFontFamily, color = Color.White)
                 }
             },
             confirmButton = {
                 TextButton(onClick = {
                     activity?.finishAffinity() // Close the app
                 }) {
-                    Text("Yes", fontFamily = poppinsFontFamily)
+                    Text("Yes", fontFamily = poppinsFontFamily, color = Color.Black) // Primary color for button
                 }
             }
         )
@@ -117,7 +119,8 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
                         text = "middleman",
                         style = MaterialTheme.typography.headlineMedium,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = ubuntuFontFamily
+                        fontFamily = ubuntuFontFamily,
+                        color = Color.Black // Primary color for title
                     )
                 },
                 navigationIcon = {
@@ -136,7 +139,8 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
                             contentDescription = "notification",
                             modifier = Modifier.clickable {
                                 navController.navigate(Routes.Notifications.routes)
-                            }
+                            },
+                            tint = Color.Black // Primary color for icons
                         )
                         if (hasNewNotifications) {
                             Box(
@@ -153,42 +157,41 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
     ) { paddingValues ->
         Column(Modifier.padding(paddingValues).padding(0.dp)) {
 
-            // wallet
-                Card(
-                    modifier = Modifier.padding(16.dp)
-                        .fillMaxWidth()
-                        .height(160.dp),
-                    colors = CardDefaults.cardColors(Color.LightGray),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Column() {
-                        Text(
-                            text = "Wallet",
-                            modifier = Modifier.padding(20.dp).padding(bottom = 15.dp),
-                            color = Color.Black,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            fontFamily = poppinsFontFamily
-                        )
-                        Text(
-                            text = "Total Orders: ",
-                            modifier = Modifier.padding(start = 20.dp,bottom = 5.dp),
-                            color = Color.Black,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = poppinsFontFamily
-                        )
-                        Text(
-                            text = "Order Amount: ",
-                            modifier = Modifier.padding(start = 20.dp,bottom = 5.dp),
-                            color = Color.Black,
-                            fontSize = 15.sp,
-                            fontWeight = FontWeight.Medium,
-                            fontFamily = poppinsFontFamily
-                        )
-                    }
+            // Wallet
+            Card(
+                modifier = Modifier.padding(16.dp)
+                    .fillMaxWidth()
+                    .height(160.dp),
+                colors = CardDefaults.cardColors(CardColor), // Light background for wallet card
+                shape = RoundedCornerShape(24.dp)
+            ) {
+                Column() {
+                    Text(
+                        text = "Wallet",
+                        modifier = Modifier.padding(20.dp).padding(bottom = 15.dp),
+                        color = Color(0xFF333333), // Darker text color
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = poppinsFontFamily
+                    )
+                    Text(
+                        text = "Total Orders: ",
+                        modifier = Modifier.padding(start = 20.dp, bottom = 5.dp),
+                        color = Color(0xFF333333), // Darker text color
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = poppinsFontFamily
+                    )
+                    Text(
+                        text = "Order Amount: ",
+                        modifier = Modifier.padding(start = 20.dp, bottom = 5.dp),
+                        color = Color(0xFF333333), // Darker text color
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.Medium,
+                        fontFamily = poppinsFontFamily
+                    )
                 }
-
+            }
 
             Row(
                 modifier = Modifier
@@ -207,7 +210,8 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
                             .padding(start = 8.dp, end = 5.dp),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Medium,
-                        fontFamily = ubuntuFontFamily
+                        fontFamily = ubuntuFontFamily,
+                        color = PrimaryColor
                     )
                 }
 
@@ -217,7 +221,7 @@ fun HomeScreen(navController: NavHostController, notificationViewModel: Notifica
                     modifier = Modifier
                         .size(120.dp, 45.dp)
                         .clip(RoundedCornerShape(18.dp))
-                        .background(Color.DarkGray)
+                        .background(Color(0xFF2d2d2e))
                         .clickable {
                             navController.navigate(Routes.CreateOrder.routes) {
                                 popUpTo(navController.graph.startDestinationId)

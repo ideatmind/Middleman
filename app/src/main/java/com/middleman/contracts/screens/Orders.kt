@@ -51,6 +51,7 @@ import androidx.navigation.NavHostController
 import com.google.firebase.auth.FirebaseAuth
 import com.middleman.contracts.model.OrderModel
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.ui.theme.PrimaryColor
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
@@ -393,7 +394,8 @@ fun DetailedOrderItem(
         ) {
             Icon(
                 imageVector = Icons.Rounded.DonutLarge,
-                contentDescription = "bullet"
+                contentDescription = "bullet",
+                tint = PrimaryColor
             )
 
             Column {

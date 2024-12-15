@@ -1,8 +1,10 @@
 package com.middleman.contracts.screens
 
+import android.graphics.drawable.GradientDrawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.AddTask
@@ -15,9 +17,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarColors
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
@@ -30,6 +34,8 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.middleman.contracts.model.NotificationModel
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.ui.theme.CardColor
+import com.middleman.contracts.ui.theme.TitleBackColor
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.utils.NotificationSharedPref
@@ -59,10 +65,17 @@ fun Notifications(
         }
     }
 
-    Column {
+    Column() {
         Scaffold(
             topBar = {
                 TopAppBar(
+                    colors = TopAppBarColors(
+                        containerColor = TitleBackColor,
+                        scrolledContainerColor = TitleBackColor,
+                        navigationIconContentColor = TitleBackColor,
+                        titleContentColor = TitleBackColor,
+                        actionIconContentColor = TitleBackColor
+                    ),
                     navigationIcon = {
                         Box(
                             modifier = Modifier.padding(horizontal = 8.dp)
@@ -74,7 +87,8 @@ fun Notifications(
                                     .size(25.dp)
                                     .clickable {
                                         navController.navigate(Routes.BottomNav.routes)
-                                    }
+                                    },
+                                tint = Color.Black
                             )
                         }
                     },
@@ -87,7 +101,8 @@ fun Notifications(
                                 text = "Notifications",
                                 style = MaterialTheme.typography.headlineMedium,
                                 fontWeight = FontWeight.Normal,
-                                fontFamily = poppinsFontFamily
+                                fontFamily = poppinsFontFamily,
+                                color = Color.Black
                             )
                         }
                     },
@@ -124,25 +139,28 @@ fun Notifications(
                     )
                 }
             } else {
-                Column(
+                LazyColumn(
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues)
                 ) {
-                    notifications.reversed().forEach { item ->
-                        NotificationItem(
-                            notificationName = item.notificationName,
-                            notificationDescription = item.notificationDescription,
-                            hasNewNotification = item.hasNewNotification,
-                            timeStamp = item.timestamp.toString(),
-                            onNotificationClicked = {
-                                item.hasNewNotification = false // Mark as read when clicked
-                            },
-                            navController = navController
-                        )
-                    }
+                    item {
+                        notifications.reversed().take(15).forEach { item ->
+                            NotificationItem(
+                                notificationName = item.notificationName,
+                                notificationDescription = item.notificationDescription,
+                                hasNewNotification = item.hasNewNotification,
+                                timeStamp = item.timestamp.toString(),
+                                onNotificationClicked = {
+                                    item.hasNewNotification = false
+                                },
+                                navController = navController
+                            )
+                        }
 
-                    Spacer(Modifier.height(25.dp))
+                        Spacer(Modifier.height(25.dp))
+
+                    }
                 }
             }
         }
@@ -167,7 +185,7 @@ fun NotificationItem(
                 isNotificationClicked = true
                 onNotificationClicked()
                 navController.navigate(Routes.Orders.routes)
-            }, horizontalAlignment = Alignment.Start
+            }.background(Color.White), horizontalAlignment = Alignment.Start
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,

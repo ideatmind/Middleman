@@ -135,11 +135,11 @@ fun RegisterScreen(navController: NavHostController) {
             Box(contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(Color(0xFF121212))) {
+            ) {
                 Card(
                     modifier = Modifier
                         .size(80.dp)
-                        .background(Color(0xFF121212)),
+                        .background(Color.Transparent),
                     shape = RoundedCornerShape(100.dp)
                 ) {
                     Box(

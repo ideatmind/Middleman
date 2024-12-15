@@ -3,8 +3,6 @@ package com.middleman.contracts.screens
 import android.annotation.SuppressLint
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,15 +18,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBackIosNew
-import androidx.compose.material.icons.filled.Call
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Phone
 import androidx.compose.material.icons.outlined.AttachMoney
 import androidx.compose.material.icons.outlined.Email
 import androidx.compose.material.icons.outlined.LocalPhone
 import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.Phone
 import androidx.compose.material.icons.rounded.AddBox
 import androidx.compose.material.icons.rounded.Money
 import androidx.compose.material.icons.rounded.ProductionQuantityLimits
@@ -52,7 +45,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
@@ -61,7 +53,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import com.middleman.contracts.model.NotificationModel
 import com.middleman.contracts.model.OrderModel
@@ -70,7 +61,6 @@ import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.AddOrderViewModel
-import com.middleman.contracts.viewmodel.AuthViewModel
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 import com.middleman.contracts.viewmodel.NotificationViewModel
 
@@ -81,7 +71,6 @@ fun CreateOrder(
     navController: NavHostController,
     notificationViewModel: NotificationViewModel = viewModel()
 ) {
-
     BackHandler {
         navController.navigate(Routes.BottomNav.routes) {
             popUpTo(Routes.BottomNav.routes) {
@@ -91,7 +80,6 @@ fun CreateOrder(
     }
 
     val context = LocalContext.current
-
     val orderViewModel: AddOrderViewModel = viewModel()
     val isPosted by orderViewModel.isPosted.observeAsState(false)
 
@@ -107,8 +95,6 @@ fun CreateOrder(
     var orderId by remember { mutableStateOf("") }
     val sellerEmail by remember { mutableStateOf(SharedPref.getEmail(context)) }
     var customerEmail by remember { mutableStateOf("") }
-
-
 
     LaunchedEffect(isPosted) {
         if (isPosted) {
@@ -129,11 +115,6 @@ fun CreateOrder(
         }
     }
 
-
-    fun encodeEmail(email: String): String {
-        return email.replace(".", "_") // Replace '.' with '_'
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -142,7 +123,8 @@ fun CreateOrder(
                         text = "Create Order",
                         style = MaterialTheme.typography.bodyLarge,
                         fontWeight = FontWeight.SemiBold,
-                        fontFamily = ubuntuFontFamily
+                        fontFamily = ubuntuFontFamily,
+                        color = Color.Black
                     )
                 },
                 navigationIcon = {
@@ -164,7 +146,8 @@ fun CreateOrder(
         Column(
             Modifier
                 .padding(paddingValues)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .background(Color(0xFFF5F5F5)), // Light gray background
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(
@@ -176,8 +159,8 @@ fun CreateOrder(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(16.dp), // Add padding to the column
-                    verticalArrangement = Arrangement.spacedBy(8.dp) // Space between each item
+                        .padding(16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     // Customer Name and Phone
                     Row(
@@ -195,7 +178,7 @@ fun CreateOrder(
                             maxLines = 3,
                             modifier = Modifier
                                 .weight(1f)
-                                .padding(end = 8.dp), // Use weight for equal distribution
+                                .padding(end = 8.dp),
                             shape = RoundedCornerShape(24.dp),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
                                 unfocusedTextColor = Color.Black,
@@ -218,7 +201,7 @@ fun CreateOrder(
                             leadingIcon = {
                                 Icon(Icons.Outlined.LocalPhone, contentDescription = "Phone Icon", tint = Color.Black)
                             },
-                            modifier = Modifier.weight(1f), // Use weight for equal distribution
+                            modifier = Modifier.weight(1f),
                             shape = RoundedCornerShape(24.dp),
                             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                             colors = TextFieldDefaults.outlinedTextFieldColors(
@@ -233,9 +216,7 @@ fun CreateOrder(
                     // Customer Email
                     OutlinedTextField(
                         value = customerEmail,
-                        onValueChange = {
-                            customerEmail = it
-                        },
+                        onValueChange = { customerEmail = it },
                         label = { Text("Customer Email Id", color = Color.DarkGray) },
                         leadingIcon = {
                             Icon(Icons.Outlined.Email, contentDescription = "Email Icon", tint = Color.Black)
@@ -298,7 +279,6 @@ fun CreateOrder(
                         value = productQuantity,
                         onValueChange = {
                             productQuantity = it
-                            // Calculate the total amount when the quantity changes
                             cost = productCost.toDoubleOrNull() ?: 0.0
                             quantity = productQuantity.toIntOrNull() ?: 0
                             totalAmount = (cost * quantity).toString()
@@ -319,7 +299,6 @@ fun CreateOrder(
                         )
                     )
 
-
                     OutlinedTextField(
                         value = totalAmount,
                         onValueChange = {},
@@ -332,12 +311,10 @@ fun CreateOrder(
                         enabled = false
                     )
 
-
                     Spacer(Modifier.height(25.dp))
 
                     Button(
                         onClick = {
-
                             when {
                                 sellerName.isEmpty() -> Toast.makeText(
                                     context,
@@ -370,7 +347,6 @@ fun CreateOrder(
                                 ).show()
 
                                 else -> {
-
                                     if (customerEmail.isNotEmpty() && !customerEmail.matches("[a-zA-Z0-9._-]+@[a-z]+\\.+[a-z]+".toRegex())) {
                                         Toast.makeText(
                                             context,
@@ -387,7 +363,6 @@ fun CreateOrder(
                                             productCost = productCost,
                                             productQuantity = productQuantity,
                                             totalAmount = totalAmount,
-//                                        orderKey = orderId,
                                             userId = FirebaseAuth.getInstance().currentUser!!.uid,
                                             sellerEmail = sellerEmail,
                                             customerEmail = customerEmail,
@@ -404,7 +379,7 @@ fun CreateOrder(
                                             NotificationModel(
                                                 notificationName = "Order Created",
                                                 notificationDescription = "Your order for $productName has been created.",
-                                                timeSeen =  System.currentTimeMillis()
+                                                timeSeen = System.currentTimeMillis()
                                             )
                                         )
 
@@ -414,7 +389,7 @@ fun CreateOrder(
                                             NotificationModel(
                                                 notificationName = "Order Confirmation",
                                                 notificationDescription = "Pay to confirm order for $productName",
-                                                timeSeen =  System.currentTimeMillis()
+                                                timeSeen = System.currentTimeMillis()
                                             )
                                         )
 
@@ -422,9 +397,8 @@ fun CreateOrder(
                                     }
                                 }
                             }
-
                         },
-                        colors = ButtonDefaults.buttonColors(Color.Black),
+                        colors = ButtonDefaults.buttonColors(Color.Black), // Primary color for button
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(50.dp)
@@ -449,7 +423,6 @@ fun CreateOrder(
                         }
                     }
                 }
-
             }
         }
     }
@@ -504,14 +477,13 @@ fun CreatedOrder(
                         }
                     }
                 },
-                colors = ButtonDefaults.buttonColors(Color.Black)
+                colors = ButtonDefaults.buttonColors(Color.Black) // Primary color for button
             ) {
                 Text("Ok", color = Color.White, fontFamily = ubuntuFontFamily)
             }
         }
     )
 }
-
 
 @Composable
 fun ShowOrder(orderDetails: OrderModel) {
@@ -533,8 +505,8 @@ fun ShowOrder(orderDetails: OrderModel) {
             .background(Color.White, shape = RoundedCornerShape(8.dp))
     ) {
         Column(
-            modifier = Modifier.padding( vertical = 16.dp, horizontal = 2.dp), // Padding inside the Box
-            verticalArrangement = Arrangement.spacedBy(8.dp) // Space between items
+            modifier = Modifier.padding(vertical = 16.dp, horizontal = 2.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             ShowOrderItems.forEach { item ->
                 Text(
@@ -544,17 +516,16 @@ fun ShowOrder(orderDetails: OrderModel) {
                     fontWeight = FontWeight.Normal,
                     fontFamily = poppinsFontFamily,
                     modifier = Modifier
-                        .padding(4.dp) // Padding around each text item
+                        .padding(4.dp)
                         .background(
                             Color(0xFFEFEFEF),
                             shape = RoundedCornerShape(4.dp)
-                        ) // Background for each item
-                        .padding(4.dp) // Padding inside each item
+                        )
+                        .padding(4.dp)
                 )
             }
         }
     }
-
 }
 
 data class ShowOrderData(

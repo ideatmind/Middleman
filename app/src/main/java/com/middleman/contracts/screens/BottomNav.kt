@@ -1,5 +1,7 @@
 package com.middleman.contracts.screens
 
+import android.annotation.SuppressLint
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
@@ -15,6 +17,7 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.vectorResource
@@ -29,18 +32,20 @@ import androidx.navigation.compose.rememberNavController
 import com.middleman.contracts.R
 import com.middleman.contracts.model.BottomNavigation
 import com.middleman.contracts.navigation.Routes
+import com.middleman.contracts.ui.theme.CardColor
 import com.middleman.contracts.utils.SharedPref
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun BottomNav(navController: NavHostController) {
 
     val navController1 = rememberNavController()
     Scaffold(
         bottomBar = { MyBottomBar(navController1) }
-    ) { innerPadding ->
+    ) {innerPadding ->
         NavHost(navController = navController1, startDestination = Routes.Home.routes,
-            modifier = Modifier.padding(innerPadding)) {
+            modifier = Modifier.padding(bottom = 50.dp)) {
 
             composable(Routes.Orders.routes) {
                 val context = LocalContext.current
@@ -102,7 +107,10 @@ fun MyBottomBar(navController1: NavHostController) {
         )
     )
 
-    BottomAppBar() {
+    BottomAppBar(
+        modifier = Modifier.height(90.dp),
+        containerColor = Color.White,
+    ) {
         list.forEach {
             val selected = it.route == backStackEntry.value?.destination?.route
 
@@ -120,7 +128,7 @@ fun MyBottomBar(navController1: NavHostController) {
                     Icon(
                         imageVector = if (selected) it.selectedIcon else it.unSelectedIcon,
                         contentDescription = null,
-                        modifier = Modifier.size(26.dp)
+                        modifier = Modifier.size(28.dp)
                     )
                 }
             )
