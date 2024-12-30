@@ -9,6 +9,12 @@ android {
     namespace = "com.middleman.contracts"
     compileSdk = 34
 
+    packagingOptions {
+        // Exclude the conflicting file
+        excludes.add("META-INF/INDEX.LIST")
+        excludes.add("META-INF/io.netty.versions.properties")
+    }
+
     defaultConfig {
         applicationId = "com.middleman.contracts"
         minSdk = 28

@@ -1,5 +1,9 @@
 package com.middleman.contracts.screens
 
+import android.app.Activity
+import android.content.Context
+import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -31,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -38,10 +43,13 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
+import com.middleman.contracts.R
 import com.middleman.contracts.navigation.Routes
 import com.middleman.contracts.ui.theme.poppinsFontFamily
 import com.middleman.contracts.ui.theme.ubuntuFontFamily
 import com.middleman.contracts.viewmodel.CreatedOrdersViewModel
+import com.razorpay.Checkout
+import org.json.JSONObject
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -387,11 +395,19 @@ fun OrderDetailsItem(
                     .fillMaxWidth()
                     .padding(top = 5.dp), contentAlignment = Alignment.Center
             ) {
+                val context = LocalContext.current
                 Button(
                     modifier = Modifier.height(35.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
                     onClick = {
-                        // Handle button click
+                        val cleanAmount = totalAmount.replace("[^\\d]".toRegex(), "")
+                        val parsedAmount = cleanAmount.toIntOrNull()
+
+                        Log.d("amount", parsedAmount.toString())
+                        initPayment(
+                            context = context,
+                            amount = parsedAmount ?: 0
+                        )
                     }
                 ) {
                     Text("Pay $totalAmount", fontFamily = poppinsFontFamily, color = Color.White)
@@ -406,6 +422,33 @@ fun OrderDetailsItem(
                 color = Color.Gray
             )
         }
+    }
+}
+
+
+private fun initPayment(context: Context, amount: Int) {
+    val activity = context as? Activity ?: return
+    val co = Checkout()
+
+    try {
+        val options = JSONObject()
+        options.put("name", "middleman")
+        options.put("description", "Demoing Charges")
+        options.put("image", R.drawable.splash_logo)
+        options.put("theme.color", "#000000")
+        options.put("currency", "INR")
+        options.put("amount", amount * 10)
+
+        val prefill = JSONObject()
+        prefill.put("email", "test@example.com")
+        prefill.put("contact", "9876543210")
+
+        options.put("prefill", prefill)
+
+        co.open(activity, options)
+    } catch (e: Exception) {
+        Toast.makeText(activity, "Error in payment: ${e.message}", Toast.LENGTH_LONG).show()
+        e.printStackTrace()
     }
 }
 
