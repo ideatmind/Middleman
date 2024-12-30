@@ -73,6 +73,7 @@ fun Orders(
     val isLoading = remember { mutableStateOf(true) }
     var isBuyOrdersSelected by remember { mutableStateOf(false) }
     var isSellOrdersSelected by remember { mutableStateOf(true) }
+    var showPayButton by remember { mutableStateOf(false) }
 
     viewModel.fetchOrdersByCustomerEmailId(customerEmail) { fetchedOrders ->
         buyOrders.clear()
@@ -151,6 +152,7 @@ fun Orders(
                         .clickable {
                             isSellOrdersSelected = true
                             isBuyOrdersSelected = false
+                            showPayButton = false
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -171,6 +173,7 @@ fun Orders(
                         .clickable {
                             isBuyOrdersSelected = true
                             isSellOrdersSelected = false
+                            showPayButton = true
                         },
                     contentAlignment = Alignment.Center
                 ) {
@@ -266,7 +269,8 @@ fun Orders(
                                 productQuantity = order.productQuantity,
                                 time = order.timeStamp,
                                 navController = navController,
-                                orderKey = order.orderKey
+                                orderKey = order.orderKey,
+                                showPayButton = showPayButton
                             )
                         }
                     }
@@ -353,7 +357,8 @@ fun Orders(
                                 productQuantity = order.productQuantity,
                                 time = order.timeStamp,
                                 navController = navController,
-                                orderKey = order.orderKey
+                                orderKey = order.orderKey,
+                                showPayButton = showPayButton
                             )
                         }
                     }
@@ -376,7 +381,8 @@ fun DetailedOrderItem(
     productQuantity: String,
     time: String,
     orderKey: String, // Add orderKey parameter
-    navController: NavHostController
+    navController: NavHostController,
+    showPayButton : Boolean
 ) {
     Column(
         Modifier
@@ -459,14 +465,16 @@ fun DetailedOrderItem(
                         )
                     }
 
-                    Button(
-                        modifier = Modifier.height(35.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
-                        onClick = {
-                            navController.navigate("${Routes.OrderDetails.routes}/$orderKey")
+                    if(showPayButton) {
+                        Button(
+                            modifier = Modifier.height(35.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xff05750a)),
+                            onClick = {
+                                navController.navigate("${Routes.OrderDetails.routes}/$orderKey")
+                            }
+                        ) {
+                            Text("Pay", fontFamily = poppinsFontFamily, color = Color.White)
                         }
-                    ) {
-                        Text("Pay", fontFamily = poppinsFontFamily, color = Color.White)
                     }
                 }
 
